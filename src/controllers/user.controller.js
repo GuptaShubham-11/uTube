@@ -14,12 +14,11 @@ const registerUser = asyncHandler( async (req, res) => {
     if (
         [ username, email, fullname, password].some((field) => (field?.trim() === ""))
     ) {
-        throw new ApiError(400, "All fields are required!!!");
-        
+        throw new ApiError(400, "All fields are required!!!");    
     }
 
     // Check if user already exists
-    const existedUser = User.findOne({
+    const existedUser = await User.findOne({
         $or: [{ username }, { email }]
     });
 
@@ -29,7 +28,12 @@ const registerUser = asyncHandler( async (req, res) => {
     
     // Get images local path from multer
     const avatarLocalPath = req.files?.avatar[0]?.path;
-    const coverImageLocalPath = req.files?.coverImage[0]?.path;
+    // const coverImageLocalPath = req.files?.coverImage[0]?.path; Because it give us to undifine error
+
+    let coverImageLocalPath;
+    if (req.files && Array.isArray(req.files.coverImage) && req.files.coverImage.length > 0) {
+        coverImageLocalPath = req.files.coverImage[0].path;
+    }    
 
     if (!avatarLocalPath) {
         throw new ApiError(400, "Avatar file is required");
@@ -38,7 +42,7 @@ const registerUser = asyncHandler( async (req, res) => {
     // Now upload the local images to coludinry platform
     const avatar = await uploadOnCloudinry(avatarLocalPath);
     const coverImage = await uploadOnCloudinry(coverImageLocalPath);
-
+    
     if (!avatar) {
         throw new ApiError(400, "Avatar file is required");
     }
