@@ -253,9 +253,11 @@ const getCurrentUser = asyncHandler(async (req, res) => {
     return res
         .status(200)
         .json(
-            200,
-            req.user,
-            "Current user fatched successfully."
+            new ApiResponse(
+                200,
+                req.user,
+                "Current user fatched successfully."
+            )
         )
 
 });
@@ -317,14 +319,14 @@ const updateUserAvatar = asyncHandler(async (req, res) => {
     ).select("-password");
 
     return res
-    .status(200)
-    .json(
-        new ApiResponse(
-            200, 
-            user,
-            "Avatar updated successfully."
-        )
-    );
+        .status(200)
+        .json(
+            new ApiResponse(
+                200,
+                user,
+                "Avatar updated successfully."
+            )
+        );
 });
 
 const updateUserCoverImage = asyncHandler(async (req, res) => {
@@ -353,24 +355,24 @@ const updateUserCoverImage = asyncHandler(async (req, res) => {
     ).select("-password");
 
     return res
-    .status(200)
-    .json(
-        new ApiResponse(
-            200, 
-            user,
-            "Cover Image uploaded successfully."
-        )
-    );
+        .status(200)
+        .json(
+            new ApiResponse(
+                200,
+                user,
+                "Cover Image uploaded successfully."
+            )
+        );
 });
 
-export { 
-    registerUser, 
-    loginUser, 
-    logoutUser, 
-    refreshAccessToken, 
-    changeCurrentPassword, 
-    getCurrentUser, 
-    updateAcountDetails, 
-    updateUserAvatar ,
+export {
+    registerUser,
+    loginUser,
+    logoutUser,
+    refreshAccessToken,
+    changeCurrentPassword,
+    getCurrentUser,
+    updateAcountDetails,
+    updateUserAvatar,
     updateUserCoverImage
 };
