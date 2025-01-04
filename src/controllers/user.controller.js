@@ -2,7 +2,7 @@ import { asyncHandler } from "../utils/asyncHandler.js";
 import { ApiError } from "../utils/ApiError.js";
 import { ApiResponse } from "../utils/ApiResponse.js";
 import { User } from "../models/user.model.js";
-import { uploadOnCloudinry } from "../utils/cloudinry.js";
+import { uploadOnCloudinary } from "../utils/cloudinary.js";
 import jwt from "jsonwebtoken";
 
 
@@ -57,8 +57,8 @@ const registerUser = asyncHandler(async (req, res) => {
     }
 
     // Now upload the local images to coludinry platform
-    const avatar = await uploadOnCloudinry(avatarLocalPath);
-    const coverImage = await uploadOnCloudinry(coverImageLocalPath);
+    const avatar = await uploadOnCloudinary(avatarLocalPath);
+    const coverImage = await uploadOnCloudinary(coverImageLocalPath);
 
     if (!avatar) {
         throw new ApiError(400, "Avatar file is required");
@@ -300,7 +300,7 @@ const updateUserAvatar = asyncHandler(async (req, res) => {
         throw new ApiError(400, "Avatar is required for update!");
     }
 
-    const avatar = await uploadOnCloudinry(avatarLocalPath);
+    const avatar = await uploadOnCloudinary(avatarLocalPath);
 
     if (!avatar.url) {
         throw new ApiError(400, "Avatar is not properly uploded!");
@@ -336,7 +336,7 @@ const updateUserCoverImage = asyncHandler(async (req, res) => {
         throw new ApiError(400, "Cover file required for update!");
     }
 
-    const coverImage = await uploadOnCloudinry(coverImageLocalPath);
+    const coverImage = await uploadOnCloudinary(coverImageLocalPath);
 
     if (!coverImage.url) {
         throw new ApiError(400, "Cover file not uploded properly!");
