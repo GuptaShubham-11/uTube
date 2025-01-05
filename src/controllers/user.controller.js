@@ -2,7 +2,7 @@ import { asyncHandler } from "../utils/asyncHandler.js";
 import { ApiError } from "../utils/ApiError.js";
 import { ApiResponse } from "../utils/ApiResponse.js";
 import { User } from "../models/user.model.js";
-import { uploadOnCloudinary } from "../utils/cloudinary.js";
+import { deleteOnCloudinary, uploadOnCloudinary } from "../utils/cloudinary.js";
 import jwt from "jsonwebtoken";
 
 
@@ -226,7 +226,10 @@ const changeCurrentPassword = asyncHandler(async (req, res) => {
 
     const { oldPassword, newPassword } = req.body;
 
-    const user = await User.findById(req.user._id);
+    console.log(oldPassword, newPassword);
+    
+
+    const user = await User.findById(req.user?._id);
 
     const isPasswordCorrect = await user.isPasswordCorrect(oldPassword);
 
@@ -263,9 +266,9 @@ const getCurrentUser = asyncHandler(async (req, res) => {
 });
 
 const updateAcountDetails = asyncHandler(async (req, res) => {
-    const { fullname, email } = req.body;
+    const { fullname, email } = req.body;    
 
-    if (!fullname || !email) {
+    if (!fullname && !email) {
         throw new ApiError(400, "All fileds are required");
     }
 
@@ -296,6 +299,9 @@ const updateAcountDetails = asyncHandler(async (req, res) => {
 const updateUserAvatar = asyncHandler(async (req, res) => {
     const avatarLocalPath = req.file?.path;
 
+    const oldAvatarPath = req.user?.avatar;
+
+
     if (!avatarLocalPath) {
         throw new ApiError(400, "Avatar is required for update!");
     }
@@ -318,6 +324,8 @@ const updateUserAvatar = asyncHandler(async (req, res) => {
         }
     ).select("-password");
 
+    await deleteOnCloudinary(oldAvatarPath);
+    
     return res
         .status(200)
         .json(
@@ -331,6 +339,7 @@ const updateUserAvatar = asyncHandler(async (req, res) => {
 
 const updateUserCoverImage = asyncHandler(async (req, res) => {
     const coverImageLocalPath = req.file?.path;
+    const oldCoverImagePath = req.user?.coverImage;
 
     if (!coverImageLocalPath) {
         throw new ApiError(400, "Cover file required for update!");
@@ -353,6 +362,8 @@ const updateUserCoverImage = asyncHandler(async (req, res) => {
             new: true
         }
     ).select("-password");
+
+    await deleteOnCloudinary(oldCoverImagePath);
 
     return res
         .status(200)
