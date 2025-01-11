@@ -1,10 +1,10 @@
 import { Router } from "express";
-import { 
-    registerUser, 
-    loginUser, 
-    logoutUser, 
-    refreshAccessToken, 
-    changeCurrentPassword, 
+import {
+    registerUser,
+    loginUser,
+    logoutUser,
+    refreshAccessToken,
+    changeCurrentPassword,
     getCurrentUser,
     updateAcountDetails,
     updateUserAvatar,
