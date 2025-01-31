@@ -14,29 +14,28 @@
 }
 
 @theme {
-
-  --color-primary-light: #2563EB;
+  --color-primary-light: #2563eb;
   /* Accessible Blue */
-  --color-primary-dark: #3B82F6;
+  --color-primary-dark: #3b82f6;
   /* Bright Blue */
 
-  --color-background-light: #F8FAFC;
+  --color-background-light: #f8fafc;
   /* Soft Off-White */
-  --color-background-dark: #1E293B;
+  --color-background-dark: #1e293b;
   /* Dark Navy */
 
-  --color-text-light: #1F2937;
+  --color-text-light: #1f2937;
   /* Near-Black */
-  --color-text-dark: #E2E8F0;
+  --color-text-dark: #e2e8f0;
   /* Soft White */
 
-  --color-secondary-light: #4B5563;
+  --color-secondary-light: #4b5563;
   /* Cool Gray */
-  --color-secondary-dark: #94A3B8;
+  --color-secondary-dark: #94a3b8;
   /* Light Gray */
 
-  --color-accent-light: #10B981;
+  --color-accent-light: #10b981;
   /* Contrasting Green */
-  --color-accent-dark: #10B981;
+  --color-accent-dark: #10b981;
   /* Same Green for consistency */
 }
