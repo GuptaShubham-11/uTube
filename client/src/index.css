@@ -12,3 +12,31 @@
   -webkit-font-smoothing: antialiased;
   -moz-osx-font-smoothing: grayscale;
 }
+
+@theme {
+
+  --color-primary-light: #2563EB;
+  /* Accessible Blue */
+  --color-primary-dark: #3B82F6;
+  /* Bright Blue */
+
+  --color-background-light: #F8FAFC;
+  /* Soft Off-White */
+  --color-background-dark: #1E293B;
+  /* Dark Navy */
+
+  --color-text-light: #1F2937;
+  /* Near-Black */
+  --color-text-dark: #E2E8F0;
+  /* Soft White */
+
+  --color-secondary-light: #4B5563;
+  /* Cool Gray */
+  --color-secondary-dark: #94A3B8;
+  /* Light Gray */
+
+  --color-accent-light: #10B981;
+  /* Contrasting Green */
+  --color-accent-dark: #10B981;
+  /* Same Green for consistency */
+}
