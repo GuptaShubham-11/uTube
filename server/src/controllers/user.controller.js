@@ -27,22 +27,20 @@ const genrateAccessAndRefreshTokens = async (userId) => {
 
 const registerUser = asyncHandler(async (req, res) => {
   // Get user data from frontend
-  const { username, email, fullname, password } = req.body;
+  const { email, fullname, password } = req.body;
 
   // Validation for data
   if (
-    [username, email, fullname, password].some((field) => field?.trim() === "")
+    [email, fullname, password].some((field) => field?.trim() === "")
   ) {
     throw new ApiError(400, "All fields are required!!!");
   }
 
   // Check if user already exists
-  const existedUser = await User.findOne({
-    $or: [{ username }, { email }],
-  });
+  const existedUser = await User.findOne({ email });
 
   if (existedUser) {
-    throw new ApiError(409, "User with email or username already existed.");
+    throw new ApiError(409, "User with email already existed.");
   }
 
   // Get images local path from multer
@@ -77,7 +75,6 @@ const registerUser = asyncHandler(async (req, res) => {
     coverImage: coverImage?.url || "",
     email,
     password,
-    username: username.toLowerCase(),
   });
 
   // check User created successfully or not
@@ -96,19 +93,17 @@ const registerUser = asyncHandler(async (req, res) => {
 
 const loginUser = asyncHandler(async (req, res) => {
   // Take data from req
-  const { username, email, password } = req.body;
+  const { email, password } = req.body;
 
-  console.log(username, email);
+  console.log(email);
 
-  // Validation on email || username is required
-  if (!username && !email) {
-    throw new ApiError(400, "Username or email is required");
+  // Validation on email
+  if (!email) {
+    throw new ApiError(400, "Email is required");
   }
 
   // Check in database
-  const user = await User.findOne({
-    $or: [{ username }, { email }],
-  });
+  const user = await User.findOne({ email });
 
   // Not exist
   if (!user) {
