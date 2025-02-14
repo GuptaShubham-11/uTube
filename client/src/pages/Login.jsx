@@ -1,31 +1,68 @@
 import { useState } from 'react';
 import { Eye, EyeOff, Mail, Lock } from 'lucide-react';
-import { Link } from 'react-router-dom';
-import { toast } from 'react-toastify';
+import { Link, useNavigate } from 'react-router-dom';
+import { Alert, Spinner } from '../components';
+import { userApi } from '../api/user.js';
+import { useDispatch } from 'react-redux';
+import { login } from '../features/authSlice.js';
 
 export default function Login() {
   const [formData, setFormData] = useState({ email: '', password: '' });
   const [showPassword, setShowPassword] = useState(false);
+  const [alert, setAlert] = useState(null);
+  const [loading, setLoading] = useState(false);
+  const navigate = useNavigate();
+  const dispatch = useDispatch();
 
-  const handleChange = (e) => {
-    setFormData({ ...formData, [e.target.name]: e.target.value });
-  };
+  const handleChange = (e) => setFormData({ ...formData, [e.target.name]: e.target.value });
 
-  const handleSubmit = (e) => {
+  const handleSubmit = async (e) => {
     e.preventDefault();
     if (!formData.email || !formData.password) {
-      toast.error('Email and password are required!');
+      setAlert({ type: 'warning', message: 'Email and password are required!' });
       return;
     }
     if (formData.password.length < 6) {
-      toast.error('Password must be at least 6 characters long.');
+      setAlert({ type: 'info', message: 'Password must be at least 6 characters long.' });
       return;
     }
-    // Handle login logic
+
+    setLoading(true);
+
+    try {
+      const response = await userApi.login(formData);
+      setLoading(false);
+
+      if (response.statusCode < 400) {
+        setAlert({ type: 'success', message: 'Login successful!' });
+
+        setTimeout(() => {
+          dispatch(login({
+            user: response.message.user,
+            accessToken: response.message.accessToken,
+            refreshToken: response.message.refreshToken
+          }));
+
+          localStorage.setItem("user", JSON.stringify(response.message.user));
+
+          navigate("/videos");
+        }, 3000);
+      } else {
+        setAlert({ type: 'error', message: response.message || 'Login failed.' });
+      }
+    } catch (error) {
+      setLoading(false);
+      setAlert({ type: 'error', message: error.message || 'Login failed.' });
+    }
   };
 
   return (
     <div className="flex justify-center items-center p-4">
+      {alert && (
+        <div className="fixed top-25 right-4 z-50">
+          <Alert type={alert.type} message={alert.message} onClose={() => setAlert(null)} />
+        </div>
+      )}
       <div className="border border-secondary-light dark:border-secondary-dark p-8 rounded-lg shadow-lg w-full max-w-md">
         <h2 className="text-3xl font-semibold text-center text-gray-800 dark:text-white mb-6">
           Login
@@ -38,7 +75,7 @@ export default function Login() {
               name="email"
               placeholder="Email"
               onChange={handleChange}
-              className="w-full pl-10 pr-4 py-3 border border-secondary-light dark:border-secondary-dark rounded-lg focus:outline-none focus:ring-2 focus:ring-primary text-gray-800 dark:text-white"
+              className="w-full pl-10 pr-4 py-3 border rounded-lg focus:ring-2 focus:ring-primary text-gray-800 dark:text-white"
             />
           </div>
           <div className="relative">
@@ -48,7 +85,7 @@ export default function Login() {
               name="password"
               placeholder="Password"
               onChange={handleChange}
-              className="w-full pl-10 pr-10 py-3 border border-secondary-light dark:border-secondary-dark rounded-lg focus:outline-none focus:ring-2 focus:ring-primary text-gray-800 dark:text-white"
+              className="w-full pl-10 pr-10 py-3 border rounded-lg focus:ring-2 focus:ring-primary text-gray-800 dark:text-white"
             />
             <button
               type="button"
@@ -60,9 +97,9 @@ export default function Login() {
           </div>
           <button
             type="submit"
-            className="w-full cursor-pointer bg-primary-light data:bg-primary-dark text-text-light dark:text-text-dark py-3 rounded-lg"
+            className="w-full bg-primary-light dark:bg-primary-dark text-white py-3 rounded-lg hover:bg-primary-dark"
           >
-            Login
+            {loading ? <Spinner /> : 'Login'}
           </button>
           <p className="text-center text-text-light dark:text-text-dark font-medium">
             Create a new account?{' '}
