@@ -96,9 +96,10 @@ const publishAVideo = asyncHandler(async (req, res) => {
     thumbnail: thumbnail?.url,
   });
 
-  return res.status(200).json(new ApiResponse(200, video, "Video published successfully."));
+  return res
+    .status(200)
+    .json(new ApiResponse(200, video, "Video published successfully."));
 });
-
 
 const getVideoById = asyncHandler(async (req, res) => {
   //TODO: get video by id

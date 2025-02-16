@@ -54,7 +54,7 @@ export default function UploadVideo() {
     { label: 'Video Title', name: 'title', Icon: Text },
     { label: 'Video Description', name: 'description', Icon: Text, textarea: true },
     { label: 'Upload Video', name: 'videoFile', Icon: Video, type: 'file', accept: 'video/*' },
-    { label: 'Upload Thumbnail', name: 'thumbnail', Icon: Image, type: 'file', accept: 'image/*' }
+    { label: 'Upload Thumbnail', name: 'thumbnail', Icon: Image, type: 'file', accept: 'image/*' },
   ];
 
   return (

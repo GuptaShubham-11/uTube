@@ -28,8 +28,8 @@ function App() {
   }, [theme]);
 
   useEffect(() => {
-    const accessToken = localStorage.getItem("accessToken");
-    const user = JSON.parse(localStorage.getItem("user"));
+    const accessToken = localStorage.getItem('accessToken');
+    const user = JSON.parse(localStorage.getItem('user'));
 
     if (accessToken && user) {
       dispatch(login({ accessToken, user, refreshToken: null }));

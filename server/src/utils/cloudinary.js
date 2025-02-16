@@ -15,15 +15,19 @@ const uploadOnCloudinary = async (localFilePath, resourceType = "auto") => {
 
     return new Promise((resolve, reject) => {
       const uploadStream = cloudinary.uploader.upload_stream(
-        { resource_type: resourceType, chunk_size: 100 * 1024 * 1024, timeout: 60000 },
+        {
+          resource_type: resourceType,
+          chunk_size: 100 * 1024 * 1024,
+          timeout: 60000,
+        },
         (error, result) => {
           if (error) {
-            reject(new Error('Cloudinary upload failed'));
+            reject(new Error("Cloudinary upload failed"));
           } else {
             if (fs.existsSync(localFilePath)) fs.unlinkSync(localFilePath); // Delete local file after upload
             resolve(result);
           }
-        }
+        },
       );
 
       fileStream.pipe(uploadStream);
@@ -44,7 +48,9 @@ const deleteOnCloudinary = async (filePath, resourceType = "auto") => {
   try {
     if (!filePath) return null;
     const publicId = extractPublicId(filePath);
-    const response = await cloudinary.uploader.destroy(publicId, { resource_type: resourceType });
+    const response = await cloudinary.uploader.destroy(publicId, {
+      resource_type: resourceType,
+    });
     return response;
   } catch (error) {
     return null;

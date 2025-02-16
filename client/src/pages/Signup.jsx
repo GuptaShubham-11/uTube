@@ -45,13 +45,11 @@ export default function Signup() {
       if (response.statusCode < 400) {
         setAlert({ type: 'success', message: 'Sign up successful!' });
         setTimeout(() => {
-          navigate("/login");
+          navigate('/login');
         }, 3000);
-
       } else {
         setAlert({ type: 'error', message: response.message || 'Sign up failed.' });
       }
-
     } catch (error) {
       setLoading(false);
       setAlert({ type: 'error', message: error.message || 'Sign up failed.' });

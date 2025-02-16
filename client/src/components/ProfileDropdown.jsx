@@ -1,10 +1,13 @@
 import { useState } from 'react';
 import { useNavigate } from 'react-router-dom';
-import { User, LogOut, Plus, UserRoundCheck, CircleUserRound, ListVideo, Home } from 'lucide-react';
+import { User, LogOut, Plus, UserRoundCheck, CircleUserRound, Home } from 'lucide-react';
+import { useDispatch } from 'react-redux';
+import { logout } from '../features/authSlice';
 
 export default function ProfileDropdown() {
   const [isOpen, setIsOpen] = useState(false);
   const navigate = useNavigate();
+  const dispatch = useDispatch();
 
   return (
     <div className="relative">
@@ -42,7 +45,10 @@ export default function ProfileDropdown() {
           >
             <CircleUserRound size={18} /> Me
           </button>
-          <button className="flex items-center gap-2 w-full px-4 py-2 text-text-light dark:text-text-dark hover:bg-gray-100 dark:hover:bg-gray-700">
+          <button
+            className="flex items-center gap-2 w-full px-4 py-2 text-text-light dark:text-text-dark hover:bg-gray-100 dark:hover:bg-gray-700"
+            onClick={() => dispatch(logout())}
+          >
             <LogOut size={18} /> Logout
           </button>
         </div>

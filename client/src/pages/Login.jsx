@@ -37,15 +37,17 @@ export default function Login() {
         setAlert({ type: 'success', message: 'Login successful!' });
 
         setTimeout(() => {
-          dispatch(login({
-            user: response.message.user,
-            accessToken: response.message.accessToken,
-            refreshToken: response.message.refreshToken
-          }));
+          dispatch(
+            login({
+              user: response.message.user,
+              accessToken: response.message.accessToken,
+              refreshToken: response.message.refreshToken,
+            })
+          );
 
-          localStorage.setItem("user", JSON.stringify(response.message.user));
+          localStorage.setItem('user', JSON.stringify(response.message.user));
 
-          navigate("/videos");
+          navigate('/videos');
         }, 3000);
       } else {
         setAlert({ type: 'error', message: response.message || 'Login failed.' });
