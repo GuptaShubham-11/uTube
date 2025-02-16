@@ -3,14 +3,23 @@ import { useNavigate } from 'react-router-dom';
 import { User, LogOut, Plus, UserRoundCheck, CircleUserRound, Home } from 'lucide-react';
 import { useDispatch } from 'react-redux';
 import { logout } from '../features/authSlice';
+import { userApi } from '../api/user.js';
+import { Alert, Spinner } from '.';
 
 export default function ProfileDropdown() {
   const [isOpen, setIsOpen] = useState(false);
+  const [loading, setLoading] = useState(false);
+  const [alert, setAlert] = useState(null);
   const navigate = useNavigate();
   const dispatch = useDispatch();
 
   return (
     <div className="relative">
+      {alert && (
+        <div className="fixed top-4 right-4 z-50">
+          <Alert type={alert.type} message={alert.message} onClose={() => setAlert(null)} />
+        </div>
+      )}
       <button
         onClick={() => setIsOpen(!isOpen)}
         className="w-10 h-10 rounded-full border-2 border-accent-light dark:border-accent-dark 
@@ -47,9 +56,31 @@ export default function ProfileDropdown() {
           </button>
           <button
             className="flex items-center gap-2 w-full px-4 py-2 text-text-light dark:text-text-dark hover:bg-gray-100 dark:hover:bg-gray-700"
-            onClick={() => dispatch(logout())}
+            onClick={async () => {
+              setLoading(true);
+              try {
+                const response = await userApi.logout();
+                console.log(response);
+
+                setLoading(false);
+
+                if (response.statusCode < 400) {
+                  setAlert({ type: 'success', message: 'Logout successful!' });
+
+                  setTimeout(() => {
+                    dispatch(logout());
+                    navigate('/login');
+                  }, 3000);
+                } else {
+                  setAlert({ type: 'error', message: 'Failed to logout.' });
+                }
+              } catch (error) {
+                setLoading(false);
+                setAlert({ type: 'error', message: error.message || 'Logout failed.' });
+              }
+            }}
           >
-            <LogOut size={18} /> Logout
+            {loading ? (<Spinner />) : (<LogOut size={18} />)} Logout
           </button>
         </div>
       )}

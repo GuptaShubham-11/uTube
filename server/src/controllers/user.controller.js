@@ -4,7 +4,7 @@ import { ApiResponse } from "../utils/ApiResponse.js";
 import { User } from "../models/user.model.js";
 import { deleteOnCloudinary, uploadOnCloudinary } from "../utils/cloudinary.js";
 import jwt from "jsonwebtoken";
-import mongoose from "mongoose";
+import mongoose, { isValidObjectId } from "mongoose";
 
 const genrateAccessAndRefreshTokens = async (userId) => {
   try {
@@ -249,10 +249,10 @@ const getCurrentUser = asyncHandler(async (req, res) => {
 });
 
 const updateAcountDetails = asyncHandler(async (req, res) => {
-  const { fullname, email } = req.body;
+  const { fullname } = req.body;
 
-  if (!fullname && !email) {
-    throw new ApiError(400, "All fileds are required");
+  if (!fullname) {
+    throw new ApiError(400, "Update for fullname is required");
   }
 
   const user = await User.findByIdAndUpdate(
@@ -260,7 +260,6 @@ const updateAcountDetails = asyncHandler(async (req, res) => {
     {
       $set: {
         fullname,
-        email,
       },
     },
     {
@@ -277,6 +276,9 @@ const updateUserAvatar = asyncHandler(async (req, res) => {
   const avatarLocalPath = req.file?.path;
 
   const oldAvatarPath = req.user?.avatar;
+
+  console.log(req.file);
+
 
   if (!avatarLocalPath) {
     throw new ApiError(400, "Avatar is required for update!");
@@ -341,16 +343,20 @@ const updateUserCoverImage = asyncHandler(async (req, res) => {
 });
 
 const getUserChannelProfile = asyncHandler(async (req, res) => {
-  const { username } = req.params;
+  const { id } = req.params;
 
-  if (!username.trim()) {
-    throw new ApiError(400, "Username is required.");
+  if (!id || !id.trim()) {
+    throw new ApiError(400, "Id is required.");
+  }
+
+  if (!isValidObjectId(id)) {
+    throw new ApiError(400, "Id is invalid.");
   }
 
   const channel = await User.aggregate([
     {
       $match: {
-        username: username?.toLowerCase(),
+        _id: new mongoose.Types.ObjectId(id),
       },
     },
     {
