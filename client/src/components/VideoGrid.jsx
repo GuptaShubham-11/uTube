@@ -5,37 +5,37 @@ const videos = [
     id: 1,
     title: 'React Basics',
     channel: 'Code Academy',
-    thumbnail: 'https://via.placeholder.com/300',
+    thumbnail: 'https://dummyimage.com/300',
   },
   {
     id: 2,
     title: 'Tailwind CSS Guide',
     channel: 'Dev Simplified',
-    thumbnail: 'https://via.placeholder.com/300',
+    thumbnail: 'https://dummyimage.com/300',
   },
   {
     id: 3,
     title: 'JavaScript Tips',
     channel: 'JS Mastery',
-    thumbnail: 'https://via.placeholder.com/300',
+    thumbnail: 'https://dummyimage.com/300',
   },
   {
     id: 4,
     title: 'Nextjs Basics',
     channel: 'Code Academy',
-    thumbnail: 'https://via.placeholder.com/300',
+    thumbnail: 'https://dummyimage.com/300',
   },
   {
     id: 5,
     title: 'Bun Guide',
     channel: 'Dev Simplified',
-    thumbnail: 'https://via.placeholder.com/300',
+    thumbnail: 'https://dummyimage.com/300',
   },
   {
     id: 6,
     title: 'Tech Tips',
     channel: 'JS Mastery',
-    thumbnail: 'https://via.placeholder.com/300',
+    thumbnail: 'https://dummyimage.com/300',
   },
 ];
 

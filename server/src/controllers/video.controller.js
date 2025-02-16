@@ -69,7 +69,6 @@ const getAllVideos = asyncHandler(async (req, res) => {
 });
 
 const publishAVideo = asyncHandler(async (req, res) => {
-  // TODO: get video, upload to cloudinary, create video
   const { title, description } = req.body;
 
   if ([title, description].some((field) => field?.trim() === "")) {
@@ -79,20 +78,15 @@ const publishAVideo = asyncHandler(async (req, res) => {
   const videoFileLocalPath = req.files?.videoFile[0]?.path;
   const thumbnailLocalPath = req.files?.thumbnail[0]?.path;
 
-  if (!videoFileLocalPath && !thumbnailLocalPath) {
-    throw new ApiError(400, "Both File are required to procced!");
+  if (!videoFileLocalPath || !thumbnailLocalPath) {
+    throw new ApiError(400, "Both video file and thumbnail are required!");
   }
 
-  const videoFile = await uploadOnCloudinary(videoFileLocalPath);
-  const thumbnail = await uploadOnCloudinary(thumbnailLocalPath);
+  const videoFile = await uploadOnCloudinary(videoFileLocalPath, "video");
+  const thumbnail = await uploadOnCloudinary(thumbnailLocalPath, "image");
 
-  if (!videoFile) {
-    throw new ApiError(400, "Video file upload failed!");
-  }
-
-  if (!thumbnail) {
-    throw new ApiError(400, "Thumbnail upload failed!");
-  }
+  if (!videoFile) throw new ApiError(400, "Video file upload failed!");
+  if (!thumbnail) throw new ApiError(400, "Thumbnail upload failed!");
 
   const video = await Video.create({
     title,
@@ -102,10 +96,9 @@ const publishAVideo = asyncHandler(async (req, res) => {
     thumbnail: thumbnail?.url,
   });
 
-  return res
-    .status(200)
-    .json(new ApiResponse(200, video, "Video published successfully."));
+  return res.status(200).json(new ApiResponse(200, video, "Video published successfully."));
 });
+
 
 const getVideoById = asyncHandler(async (req, res) => {
   //TODO: get video by id

@@ -1,93 +1,106 @@
 import { useState } from 'react';
-import { UploadCloud } from 'lucide-react';
+import { UploadCloud, Video, Image, Text } from 'lucide-react';
+import { Alert, Spinner } from '../components';
+import { videoApi } from '../api/video.js';
+import { useNavigate } from 'react-router-dom';
 
 export default function UploadVideo() {
-  const [title, setTitle] = useState('');
-  const [description, setDescription] = useState('');
-  const [video, setVideo] = useState(null);
-  const [thumbnail, setThumbnail] = useState(null);
+  const [formData, setFormData] = useState({
+    title: '',
+    description: '',
+    videoFile: null,
+    thumbnail: null,
+  });
+  const [alert, setAlert] = useState(null);
+  const [loading, setLoading] = useState(false);
+  const navigate = useNavigate();
 
-  const handleVideoChange = (e) => {
-    setVideo(e.target.files[0]);
+  const handleChange = (e) => {
+    const { name, value, files } = e.target;
+    setFormData((prev) => ({
+      ...prev,
+      [name]: files ? files[0] : value,
+    }));
   };
 
-  const handleThumbnailChange = (e) => {
-    setThumbnail(e.target.files[0]);
-  };
-
-  const handleUpload = () => {
-    if (!title || !description || !video || !thumbnail) {
-      alert('Please fill all fields and upload files.');
+  const handleUpload = async () => {
+    const { title, description, videoFile, thumbnail } = formData;
+    if (!title || !description || !videoFile || !thumbnail) {
+      setAlert({ type: 'warning', message: 'Please fill all fields and upload files.' });
       return;
     }
 
-    console.log({
-      title,
-      description,
-      video,
-      thumbnail,
-    });
+    const uploadData = new FormData();
+    Object.entries(formData).forEach(([key, value]) => uploadData.append(key, value));
 
-    alert('Video uploaded successfully!');
+    setLoading(true);
+    try {
+      const response = await videoApi.uploadVideo(uploadData);
+      setLoading(false);
+
+      if (response.statusCode < 400) {
+        setAlert({ type: 'success', message: 'Video uploaded successfully!' });
+        setTimeout(() => navigate('/videos'), 3000);
+      } else {
+        setAlert({ type: 'error', message: response.message || 'Video upload failed.' });
+      }
+    } catch (error) {
+      setLoading(false);
+      setAlert({ type: 'error', message: error.message || 'Video upload failed.' });
+    }
   };
 
+  const inputFields = [
+    { label: 'Video Title', name: 'title', Icon: Text },
+    { label: 'Video Description', name: 'description', Icon: Text, textarea: true },
+    { label: 'Upload Video', name: 'videoFile', Icon: Video, type: 'file', accept: 'video/*' },
+    { label: 'Upload Thumbnail', name: 'thumbnail', Icon: Image, type: 'file', accept: 'image/*' }
+  ];
+
   return (
-    <div className="max-w-3xl mx-auto my-10 p-6 text-text-light  dark:text-text-dark">
-      <h1 className="text-3xl font-bold text-center mb-6">Upload Video</h1>
+    <div className="max-w-3xl mx-auto my-10 p-6 rounded-xl shadow-lg bg-white dark:bg-gray-800 text-gray-900 dark:text-gray-100">
+      <h1 className="text-4xl font-bold text-center mb-6">Upload Video</h1>
+      {alert && <Alert type={alert.type} message={alert.message} onClose={() => setAlert(null)} />}
 
-      {/* Title */}
-      <div className="mb-4">
-        <label className="block text-lg font-medium">Video Title</label>
-        <input
-          type="text"
-          placeholder="Enter video title..."
-          value={title}
-          onChange={(e) => setTitle(e.target.value)}
-          className="w-full px-4 py-2 border border-secondary-light dark:border-secondary-dark bg-white dark:bg-gray-800 rounded-lg outline-none"
-        />
-      </div>
+      {inputFields.map(({ label, name, Icon, textarea, type, accept }, idx) => (
+        <div key={idx} className="mb-4 relative">
+          <Icon className="absolute left-3 top-3 text-gray-500" size={20} />
+          {textarea ? (
+            <textarea
+              name={name}
+              placeholder={label + '...'}
+              value={formData[name]}
+              onChange={handleChange}
+              rows="4"
+              className="pl-10 w-full px-4 py-2 border rounded-lg outline-none focus:border-blue-500 dark:focus:border-blue-400"
+            />
+          ) : type === 'file' ? (
+            <input
+              type="file"
+              name={name}
+              accept={accept}
+              onChange={handleChange}
+              className="pl-10 w-full border p-2 rounded-lg outline-none file:mr-4 file:py-2 file:px-4 file:rounded-md file:border-0 file:bg-accent-light file:text-white hover:opacity-85"
+            />
+          ) : (
+            <input
+              type="text"
+              name={name}
+              placeholder={label + '...'}
+              value={formData[name]}
+              onChange={handleChange}
+              className="pl-10 w-full px-4 py-2 border rounded-lg outline-none focus:border-blue-500 dark:focus:border-blue-400"
+            />
+          )}
+        </div>
+      ))}
 
-      {/* Description */}
-      <div className="mb-4">
-        <label className="block text-lg font-medium">Description</label>
-        <textarea
-          placeholder="Enter video description..."
-          value={description}
-          onChange={(e) => setDescription(e.target.value)}
-          rows="4"
-          className="w-full px-4 py-2 border border-secondary-light dark:border-secondary-dark bg-white dark:bg-gray-800 rounded-lg outline-none"
-        />
-      </div>
-
-      {/* Video Upload */}
-      <div className="mb-4">
-        <label className="block text-lg font-medium">Upload Video</label>
-        <input
-          type="file"
-          accept="video/*"
-          onChange={handleVideoChange}
-          className="w-full border border-secondary-light dark:border-secondary-dark bg-white dark:bg-gray-800 p-2 rounded-lg"
-        />
-      </div>
-
-      {/* Thumbnail Upload */}
-      <div className="mb-4">
-        <label className="block text-lg font-medium">Upload Thumbnail</label>
-        <input
-          type="file"
-          accept="image/*"
-          onChange={handleThumbnailChange}
-          className="w-full border border-secondary-light dark:border-secondary-dark bg-white dark:bg-gray-800 p-2 rounded-lg"
-        />
-      </div>
-
-      {/* Upload Button */}
       <button
         onClick={handleUpload}
-        className="w-full px-6 py-2 text-lg font-semibold rounded-lg bg-primary-light text-white 
-                dark:bg-primary-dark dark:text-background-dark hover:brightness-110 transition duration-300 flex items-center justify-center gap-2"
+        className="w-full px-6 py-3 mt-4 text-lg font-semibold rounded-lg bg-primary-light text-white hover:opacity-90 cursor-pointer transition flex items-center justify-center gap-2"
+        disabled={loading}
       >
-        <UploadCloud size={20} /> Upload
+        {loading ? <Spinner /> : <UploadCloud size={20} />} Upload
       </button>
     </div>
   );
