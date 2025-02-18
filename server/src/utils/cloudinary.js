@@ -23,7 +23,7 @@ const uploadOnCloudinary = async (localFilePath, resourceType = "auto") => {
       const uploadStream = cloudinary.uploader.upload_stream(
         {
           resource_type: resourceType,
-          chunk_size: 10 * 1024 * 1024, // 50MB chunks
+          chunk_size: 10 * 1024 * 1024, // 10MB chunk size
           timeout: 60000, // 1 minute timeout
           folder: "uTube",
         },
@@ -32,7 +32,7 @@ const uploadOnCloudinary = async (localFilePath, resourceType = "auto") => {
             console.error("Cloudinary upload failed:", error);
             reject(new Error("Cloudinary upload failed"));
           } else {
-            if (fs.existsSync(localFilePath)) fs.unlinkSync(localFilePath);
+            if (fs.existsSync(localFilePath)) fs.unlinkSync(localFilePath);  // Delay this until upload success
             resolve(result);
           }
         },
@@ -41,11 +41,11 @@ const uploadOnCloudinary = async (localFilePath, resourceType = "auto") => {
       fileStream.pipe(uploadStream);
     });
   } catch (error) {
-    if (fs.existsSync(localFilePath)) fs.unlinkSync(localFilePath);
     console.error("Upload failed:", error);
     return null;
   }
 };
+
 
 const extractPublicId = (url) => {
   const parts = url.split("/");
