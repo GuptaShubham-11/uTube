@@ -59,7 +59,13 @@ export default function Signup() {
   const inputFields = [
     { name: 'fullname', type: 'text', icon: <User />, placeholder: 'Full Name' },
     { name: 'email', type: 'email', icon: <Mail />, placeholder: 'Email' },
-    { name: 'avatar', type: 'file', icon: <ImageUp />, placeholder: 'Profile Picture', accept: 'image/*' },
+    {
+      name: 'avatar',
+      type: 'file',
+      icon: <ImageUp />,
+      placeholder: 'Profile Picture',
+      accept: 'image/*',
+    },
     {
       name: 'password',
       type: showPassword ? 'text' : 'password',
