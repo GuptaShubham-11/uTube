@@ -1,9 +1,8 @@
 import { BrowserRouter as Router, Routes, Route, Navigate } from 'react-router-dom';
 import { useEffect } from 'react';
-import { useSelector } from 'react-redux';
-import { Layout } from './components';
-import { useDispatch } from 'react-redux';
+import { useSelector, useDispatch } from 'react-redux';
 import { login } from './features/authSlice.js';
+import { Layout } from './components';
 import {
   Videos,
   NotFound,
@@ -25,39 +24,34 @@ function App() {
     const root = document.documentElement;
     root.classList.remove('light', 'dark');
     root.classList.add(theme);
-  }, [theme]);
 
-  useEffect(() => {
     const accessToken = localStorage.getItem('accessToken');
     const user = JSON.parse(localStorage.getItem('user'));
 
     if (accessToken && user) {
       dispatch(login({ accessToken, user, refreshToken: null }));
     }
-  }, [dispatch]);
+  }, [theme, dispatch]);
+
+  const routes = [
+    { path: '/', element: isAuthenticated ? <Videos /> : <Home /> },
+    { path: '/signup', element: isAuthenticated ? <Navigate to="/" /> : <Signup /> },
+    { path: '/login', element: isAuthenticated ? <Navigate to="/" /> : <Login /> },
+    { path: '/videos', element: isAuthenticated ? <Videos /> : <Navigate to="/login" /> },
+    { path: '/upload', element: isAuthenticated ? <UploadVideo /> : <Navigate to="/login" /> },
+    { path: '/me', element: isAuthenticated ? <ChannelPage /> : <Navigate to="/login" /> },
+    { path: '/subscribed', element: isAuthenticated ? <Subscribed /> : <Navigate to="/login" /> },
+    { path: '/video', element: isAuthenticated ? <Video /> : <Navigate to="/login" /> },
+    { path: '*', element: <NotFound /> },
+  ];
 
   return (
     <Router>
       <Layout>
         <Routes>
-          <Route path="/" element={isAuthenticated ? <Videos /> : <Home />} />
-          <Route path="/signup" element={isAuthenticated ? <Navigate to="/" /> : <Signup />} />
-          <Route path="/login" element={isAuthenticated ? <Navigate to="/" /> : <Login />} />
-          <Route path="/videos" element={isAuthenticated ? <Videos /> : <Navigate to="/login" />} />
-          <Route
-            path="/upload"
-            element={isAuthenticated ? <UploadVideo /> : <Navigate to="/login" />}
-          />
-          <Route
-            path="/me"
-            element={isAuthenticated ? <ChannelPage /> : <Navigate to="/login" />}
-          />
-          <Route
-            path="/subscribed"
-            element={isAuthenticated ? <Subscribed /> : <Navigate to="/login" />}
-          />
-          <Route path="/video" element={isAuthenticated ? <Video /> : <Navigate to="/login" />} />
-          <Route path="*" element={<NotFound />} />
+          {routes.map(({ path, element }) => (
+            <Route key={path} path={path} element={element} />
+          ))}
         </Routes>
       </Layout>
     </Router>
