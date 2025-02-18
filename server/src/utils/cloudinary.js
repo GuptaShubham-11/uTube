@@ -32,7 +32,7 @@ const uploadOnCloudinary = async (localFilePath, resourceType = "auto") => {
             console.error("Cloudinary upload failed:", error);
             reject(new Error("Cloudinary upload failed"));
           } else {
-            if (fs.existsSync(localFilePath)) fs.unlinkSync(localFilePath);  // Delay this until upload success
+            if (fs.existsSync(localFilePath)) fs.unlinkSync(localFilePath); // Delay this until upload success
             resolve(result);
           }
         },
@@ -45,7 +45,6 @@ const uploadOnCloudinary = async (localFilePath, resourceType = "auto") => {
     return null;
   }
 };
-
 
 const extractPublicId = (url) => {
   const parts = url.split("/");
