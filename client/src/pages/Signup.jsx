@@ -1,7 +1,7 @@
-import { useState, useEffect } from 'react';
+import { useState } from 'react';
 import { Eye, EyeOff, Mail, Lock, User, ImageUp } from 'lucide-react';
 import { Link } from 'react-router-dom';
-import { Alert, Spinner } from '../components';
+import { Alert, Spinner, Input, Button } from '../components';
 import { userApi } from '../api/user.js';
 import { useNavigate } from 'react-router-dom';
 
@@ -59,7 +59,7 @@ export default function Signup() {
   const inputFields = [
     { name: 'fullname', type: 'text', icon: <User />, placeholder: 'Full Name' },
     { name: 'email', type: 'email', icon: <Mail />, placeholder: 'Email' },
-    { name: 'avatar', type: 'file', icon: <ImageUp />, placeholder: 'Profile Picture' },
+    { name: 'avatar', type: 'file', icon: <ImageUp />, placeholder: 'Profile Picture', accept: 'image/*' },
     {
       name: 'password',
       type: showPassword ? 'text' : 'password',
@@ -83,15 +83,13 @@ export default function Signup() {
           <form onSubmit={handleSubmit} className="space-y-5">
             {inputFields.map((field, index) => (
               <div key={index} className="relative">
-                <span className="absolute left-3 top-3 text-gray-500 dark:text-gray-300">
-                  {field.icon}
-                </span>
-                <input
+                <Input
                   type={field.type}
                   name={field.name}
                   placeholder={field.placeholder}
+                  icon={field.icon}
                   onChange={field.name === 'avatar' ? handleFileChange : handleChange}
-                  className="w-full pl-10 pr-4 py-3 border rounded-lg focus:ring-2 focus:ring-primary text-gray-800 dark:text-white"
+                  accept={field.accept}
                 />
               </div>
             ))}
@@ -105,12 +103,7 @@ export default function Signup() {
                 {showPassword ? <EyeOff /> : <Eye />}
               </button>
             </div>
-            <button
-              type="submit"
-              className="w-full bg-blue-600 text-white py-3 rounded-lg hover:bg-blue-700"
-            >
-              {loading ? <Spinner /> : 'Sign Up'}
-            </button>
+            <Button text={loading ? <Spinner /> : 'Sign Up'} onClick={handleSubmit} />
             <p className="text-center text-gray-600 dark:text-gray-300">
               Already have an account?{' '}
               <Link to="/login" className="text-blue-600 hover:underline">
