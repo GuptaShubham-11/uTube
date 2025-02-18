@@ -80,7 +80,7 @@ export default function ProfileDropdown() {
               }
             }}
           >
-            {loading ? (<Spinner />) : (<LogOut size={18} />)} Logout
+            {loading ? <Spinner /> : <LogOut size={18} />} Logout
           </button>
         </div>
       )}

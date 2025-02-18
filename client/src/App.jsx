@@ -3,7 +3,7 @@ import { useEffect } from 'react';
 import { useSelector } from 'react-redux';
 import { Layout } from './components';
 import { useDispatch } from 'react-redux';
-import { login } from './features/authSlice';
+import { login } from './features/authSlice.js';
 import {
   Videos,
   NotFound,

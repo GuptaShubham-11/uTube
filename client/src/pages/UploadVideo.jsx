@@ -59,9 +59,12 @@ export default function UploadVideo() {
 
   return (
     <div className="max-w-3xl mx-auto my-10 p-6 rounded-xl shadow-lg bg-white dark:bg-gray-800 text-gray-900 dark:text-gray-100">
+      {alert && (
+        <div className="fixed top-25 right-4 z-50">
+          <Alert type={alert.type} message={alert.message} onClose={() => setAlert(null)} />
+        </div>
+      )}
       <h1 className="text-4xl font-bold text-center mb-6">Upload Video</h1>
-      {alert && <Alert type={alert.type} message={alert.message} onClose={() => setAlert(null)} />}
-
       {inputFields.map(({ label, name, Icon, textarea, type, accept }, idx) => (
         <div key={idx} className="mb-4 relative">
           <Icon className="absolute left-3 top-3 text-gray-500" size={20} />
