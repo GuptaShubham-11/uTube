@@ -20,9 +20,7 @@ export default function Features() {
               <h3 className="text-2xl font-semibold text-primary-light dark:text-primary-dark mb-4">
                 {feature.title}
               </h3>
-              <p className="text-secondary-light dark:text-secondary-dark">
-                {feature.description}
-              </p>
+              <p className="text-secondary-light dark:text-secondary-dark">{feature.description}</p>
             </div>
           ))}
         </div>

@@ -13,16 +13,8 @@ export default function HeroSection() {
         Watch, upload, and explore videos from around the world.
       </p>
       <div className="mt-8 flex justify-center gap-4">
-        <Button
-          text="Sign Up"
-          onClick={() => navigate('/signup')}
-          variant="primary"
-        />
-        <Button
-          text="Login"
-          onClick={() => navigate('/login')}
-          variant="secondary"
-        />
+        <Button text="Sign Up" onClick={() => navigate('/signup')} variant="primary" />
+        <Button text="Login" onClick={() => navigate('/login')} variant="secondary" />
       </div>
     </section>
   );
