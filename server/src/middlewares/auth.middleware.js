@@ -8,8 +8,8 @@ export const verifyJWT = asyncHandler(async (req, _, next) => {
   try {
     // Step 1: Extract token from cookies or Authorization header
     const token =
-      req.cookies?.accessToken ||  // From cookies
-      req.header("Authorization")?.replace("Bearer ", "");  // From Authorization header
+      req.cookies?.accessToken || // From cookies
+      req.header("Authorization")?.replace("Bearer ", ""); // From Authorization header
 
     // Step 2: If no token, throw error
     if (!token) {
@@ -21,7 +21,7 @@ export const verifyJWT = asyncHandler(async (req, _, next) => {
 
     // Step 4: Look up the user in the database using the decoded token's _id
     const user = await User.findById(decodedToken?._id).select(
-      "-password -refreshToken"  // Exclude password and refreshToken from the result
+      "-password -refreshToken", // Exclude password and refreshToken from the result
     );
 
     // Step 5: If user not found, throw error
