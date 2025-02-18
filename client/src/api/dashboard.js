@@ -20,30 +20,15 @@ apiClient.interceptors.request.use(
   }
 );
 
-const uploadVideo = async (data) => {
+const getChannelVideos = async () => {
   try {
-    const response = await apiClient.post('/api/v1/videos', data, {
-      headers: {
-        'Content-Type': 'multipart/form-data',
-      },
-    });
-
+    const response = await apiClient.get(`/api/v1/dashboard/videos`);
     return response.data;
   } catch (error) {
     return error.response.data;
   }
 };
 
-const getSuggestedVideos = async () => {
-  try {
-    const response = await apiClient.get('/api/v1/videos/suggested-videos');
-    return response.data;
-  } catch (error) {
-    return error.response.data;
-  }
-};
-
-export const videoApi = {
-  uploadVideo,
-  getSuggestedVideos,
+export const dashboardApi = {
+  getChannelVideos,
 };
