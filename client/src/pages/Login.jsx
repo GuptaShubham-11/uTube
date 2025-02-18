@@ -5,6 +5,8 @@ import { Alert, Spinner } from '../components';
 import { userApi } from '../api/user.js';
 import { useDispatch } from 'react-redux';
 import { login } from '../features/authSlice.js';
+import Button from '../components/Button';
+import Input from '../components/Input';
 
 export default function Login() {
   const [formData, setFormData] = useState({ email: '', password: '' });
@@ -70,24 +72,22 @@ export default function Login() {
           Login
         </h2>
         <form onSubmit={handleSubmit} className="space-y-5">
+          <Input
+            type="email"
+            name="email"
+            placeholder="Email"
+            value={formData.email}
+            icon={<Mail />}
+            onChange={handleChange}
+          />
           <div className="relative">
-            <Mail className="absolute left-3 top-3 text-text-light dark:text-text-dark" />
-            <input
-              type="email"
-              name="email"
-              placeholder="Email"
-              onChange={handleChange}
-              className="w-full pl-10 pr-4 py-3 border rounded-lg focus:ring-2 focus:ring-primary text-gray-800 dark:text-white"
-            />
-          </div>
-          <div className="relative">
-            <Lock className="absolute left-3 top-3 text-text-light dark:text-text-dark" />
-            <input
+            <Input
               type={showPassword ? 'text' : 'password'}
               name="password"
               placeholder="Password"
+              value={formData.password}
+              icon={<Lock />}
               onChange={handleChange}
-              className="w-full pl-10 pr-10 py-3 border rounded-lg focus:ring-2 focus:ring-primary text-gray-800 dark:text-white"
             />
             <button
               type="button"
@@ -97,12 +97,12 @@ export default function Login() {
               {showPassword ? <EyeOff /> : <Eye />}
             </button>
           </div>
-          <button
-            type="submit"
-            className="w-full bg-primary-light dark:bg-primary-dark text-white py-3 rounded-lg hover:bg-primary-dark"
-          >
-            {loading ? <Spinner /> : 'Login'}
-          </button>
+          <Button
+            text={loading ? 'Logging In...' : 'Login'}
+            onClick={handleSubmit}
+            isLoading={loading}
+            variant="primary"
+          />
           <p className="text-center text-text-light dark:text-text-dark font-medium">
             Create a new account?{' '}
             <Link to="/signup" className="text-primary-light dark:text-primary-dark">

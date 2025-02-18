@@ -94,6 +94,7 @@ export default function Signup() {
                   name={field.name}
                   placeholder={field.placeholder}
                   icon={field.icon}
+                  value={formData[field.name]}
                   onChange={field.name === 'avatar' ? handleFileChange : handleChange}
                   accept={field.accept}
                 />
@@ -110,7 +111,7 @@ export default function Signup() {
               </button>
             </div>
             <Button text={loading ? <Spinner /> : 'Sign Up'} onClick={handleSubmit} />
-            <p className="text-center text-gray-600 dark:text-gray-300">
+            <p className="text-center text-text-light dark:text-text-dark font-medium">
               Already have an account?{' '}
               <Link to="/login" className="text-blue-600 hover:underline">
                 Login
