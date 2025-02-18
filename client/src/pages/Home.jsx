@@ -1,10 +1,12 @@
+import { Fragment } from 'react';
 import { HeroSection, Features } from '../components';
 
 export default function Home() {
   return (
-    <div>
+    <Fragment>
       <HeroSection />
       <Features />
-    </div>
+    </Fragment>
   );
 }
+
