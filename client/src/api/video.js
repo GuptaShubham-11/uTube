@@ -27,8 +27,16 @@ const uploadVideo = async (data) => {
         'Content-Type': 'multipart/form-data',
       },
     });
-    console.log(response);
 
+    return response.data;
+  } catch (error) {
+    return error.response.data;
+  }
+};
+
+const getSuggestedVideos = async () => {
+  try {
+    const response = await apiClient.get('/api/v1/videos/suggested-videos');
     return response.data;
   } catch (error) {
     return error.response.data;
@@ -37,4 +45,5 @@ const uploadVideo = async (data) => {
 
 export const videoApi = {
   uploadVideo,
+  getSuggestedVideos
 };
