@@ -67,9 +67,9 @@ const getChannelStats = asyncHandler(async (req, res) => {
 });
 
 const getChannelVideos = asyncHandler(async (req, res) => {
-  const { userId } = req.user;
+  const { _id } = req.user;
 
-  if (!isValidObjectId(userId)) {
+  if (!isValidObjectId(_id)) {
     throw new ApiError(400, "Invalid user Id");
   }
 
@@ -77,7 +77,7 @@ const getChannelVideos = asyncHandler(async (req, res) => {
   const videos = await Video.aggregate([
     {
       $match: {
-        owner: new mongoose.Types.ObjectId(userId),
+        owner: new mongoose.Types.ObjectId(_id),
       },
     },
     {
@@ -88,13 +88,11 @@ const getChannelVideos = asyncHandler(async (req, res) => {
         views: 1,
         likes: 1,
         createdAt: 1,
+        videoFile: 1,
+        thumbnail: 1,
       },
     },
   ]);
-
-  if (!videos.length) {
-    throw new ApiError(404, "No videos found for this channel!");
-  }
 
   return res
     .status(200)

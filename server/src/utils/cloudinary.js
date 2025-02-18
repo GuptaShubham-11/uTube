@@ -6,25 +6,33 @@ cloudinary.config({
   cloud_name: process.env.CLOUDINARY_CLOUD_NAME,
   api_key: process.env.CLOUDINARY_API_KEY,
   api_secret: process.env.CLOUDINARY_API_SECRET,
+  secure: true,
 });
 
 const uploadOnCloudinary = async (localFilePath, resourceType = "auto") => {
   try {
     if (!localFilePath) return null;
+
     const fileStream = fs.createReadStream(localFilePath);
+    fileStream.on("error", (err) => {
+      console.error("File stream error:", err);
+      throw new Error("Failed to read the file stream.");
+    });
 
     return new Promise((resolve, reject) => {
       const uploadStream = cloudinary.uploader.upload_stream(
         {
           resource_type: resourceType,
-          chunk_size: 100 * 1024 * 1024,
-          timeout: 60000,
+          chunk_size: 10 * 1024 * 1024, // 50MB chunks
+          timeout: 60000, // 1 minute timeout
+          folder: "uTube",
         },
         (error, result) => {
           if (error) {
+            console.error("Cloudinary upload failed:", error);
             reject(new Error("Cloudinary upload failed"));
           } else {
-            if (fs.existsSync(localFilePath)) fs.unlinkSync(localFilePath); // Delete local file after upload
+            if (fs.existsSync(localFilePath)) fs.unlinkSync(localFilePath);
             resolve(result);
           }
         },
@@ -34,6 +42,7 @@ const uploadOnCloudinary = async (localFilePath, resourceType = "auto") => {
     });
   } catch (error) {
     if (fs.existsSync(localFilePath)) fs.unlinkSync(localFilePath);
+    console.error("Upload failed:", error);
     return null;
   }
 };
@@ -41,7 +50,7 @@ const uploadOnCloudinary = async (localFilePath, resourceType = "auto") => {
 const extractPublicId = (url) => {
   const parts = url.split("/");
   const fileName = parts.pop();
-  return fileName.split(".")[0]; // Return only the public ID
+  return fileName.split(".")[0];
 };
 
 const deleteOnCloudinary = async (filePath, resourceType = "auto") => {
@@ -53,6 +62,7 @@ const deleteOnCloudinary = async (filePath, resourceType = "auto") => {
     });
     return response;
   } catch (error) {
+    console.error("Deletion failed:", error);
     return null;
   }
 };

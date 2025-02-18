@@ -204,7 +204,7 @@ const refreshAccessToken = asyncHandler(async (req, res) => {
     return res
       .status(200)
       .cookie("accessToken", accessToken, options)
-      .cookie("refreshToke", newRefreshToken, options)
+      .cookie("refreshToken", newRefreshToken, options)
       .json(
         new ApiResponse(
           200,
@@ -278,7 +278,6 @@ const updateUserAvatar = asyncHandler(async (req, res) => {
   const oldAvatarPath = req.user?.avatar;
 
   console.log(req.file);
-
 
   if (!avatarLocalPath) {
     throw new ApiError(400, "Avatar is required for update!");

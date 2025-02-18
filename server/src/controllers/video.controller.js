@@ -94,6 +94,7 @@ const publishAVideo = asyncHandler(async (req, res) => {
     duration: videoFile?.duration,
     videoFile: videoFile?.url,
     thumbnail: thumbnail?.url,
+    owner: req.user?._id,
   });
 
   return res
@@ -222,6 +223,55 @@ const togglePublishStatus = asyncHandler(async (req, res) => {
     );
 });
 
+const getSuggestedVideos = asyncHandler(async (req, res) => {
+  //TODO: get suggested videos
+  const {
+    page = 1,
+    limit = 7,
+    query,
+    sortBy = "createdAt",
+    sortType = "asc",
+  } = req.query;
+
+  const suggestedVideos = await Video.aggregate([
+    {
+      $match: {
+        isPublished: true,
+        ...(query ? { title: { $regex: query, $options: "i" } } : {}),
+      },
+    },
+    {
+      $sort: {
+        [sortBy]: sortType === "asc" ? 1 : -1,
+      },
+    },
+    {
+      $skip: (page - 1) * limit,
+    },
+    {
+      $limit: Number(limit),
+    },
+    {
+      $project: {
+        title: 1,
+        description: 1,
+        videoFile: 1,
+        thumbnail: 1,
+      },
+    },
+  ]);
+
+  return res
+    .status(200)
+    .json(
+      new ApiResponse(
+        200,
+        suggestedVideos,
+        "Suggested videos retrieved successfully.",
+      ),
+    );
+});
+
 export {
   getAllVideos,
   publishAVideo,
@@ -229,4 +279,5 @@ export {
   updateVideo,
   deleteVideo,
   togglePublishStatus,
+  getSuggestedVideos,
 };
