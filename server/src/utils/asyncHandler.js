@@ -1,4 +1,4 @@
-// First way to handle 
+// First way to handle
 // const asyncHandler = (requestHandler) => {
 //   return (req, res, next) => {
 //     Promise.resolve(requestHandler(req, res, next)).catch((error) =>
@@ -8,7 +8,6 @@
 // };
 
 // export { asyncHandler };
-
 
 // Second way to handle
 const asyncHandler = (fx) => async (req, res, next) => {
@@ -23,4 +22,3 @@ const asyncHandler = (fx) => async (req, res, next) => {
 };
 
 export { asyncHandler };
-
