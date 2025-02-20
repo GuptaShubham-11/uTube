@@ -1,6 +1,6 @@
 import { useState } from 'react';
-import { UploadCloud, Video, Image, Text } from 'lucide-react';
-import { Alert, Spinner } from '../components';
+import { Video, Image, Text } from 'lucide-react';
+import { Alert, Spinner, Button, Input } from '../components';
 import { videoApi } from '../api/video.js';
 import { useNavigate } from 'react-router-dom';
 
@@ -51,14 +51,14 @@ export default function UploadVideo() {
   };
 
   const inputFields = [
-    { label: 'Video Title', name: 'title', Icon: Text },
-    { label: 'Video Description', name: 'description', Icon: Text, textarea: true },
-    { label: 'Upload Video', name: 'videoFile', Icon: Video, type: 'file', accept: 'video/*' },
-    { label: 'Upload Thumbnail', name: 'thumbnail', Icon: Image, type: 'file', accept: 'image/*' },
+    { label: 'Video Title', name: 'title', Icon: <Text /> },
+    { label: 'Video Description', name: 'description', Icon: <Text />, textarea: true },
+    { label: 'Upload Video', name: 'videoFile', Icon: <Video />, type: 'file', accept: 'video/*' },
+    { label: 'Upload Thumbnail', name: 'thumbnail', Icon: <Image />, type: 'file', accept: 'image/*' },
   ];
 
   return (
-    <div className="max-w-3xl mx-auto my-10 p-6 rounded-xl shadow-lg bg-white dark:bg-gray-800 text-gray-900 dark:text-gray-100">
+    <div className="max-w-3xl mx-auto my-24 p-6 rounded-xl shadow-lg border border-secondary-light dark:border-secondary-dark text-text-light dark:text-text-dark">
       {alert && (
         <div className="fixed top-25 right-4 z-50">
           <Alert type={alert.type} message={alert.message} onClose={() => setAlert(null)} />
@@ -66,45 +66,48 @@ export default function UploadVideo() {
       )}
       <h1 className="text-4xl font-bold text-center mb-6">Upload Video</h1>
       {inputFields.map(({ label, name, Icon, textarea, type, accept }, idx) => (
-        <div key={idx} className="mb-4 relative">
-          <Icon className="absolute left-3 top-3 text-gray-500" size={20} />
+        <div key={idx} className="mb-4">
+          <div className="flex items-center gap-2 mb-2">
+            <span className="text-sm font-medium">{label}</span>
+          </div>
           {textarea ? (
-            <textarea
+            <Input
+              as="textarea"
               name={name}
-              placeholder={label + '...'}
+              icon={Icon}
+              placeholder={`${label}...`}
               value={formData[name]}
               onChange={handleChange}
               rows="4"
-              className="pl-10 w-full px-4 py-2 border rounded-lg outline-none focus:border-blue-500 dark:focus:border-blue-400"
             />
           ) : type === 'file' ? (
-            <input
+            <Input
               type="file"
               name={name}
+              icon={Icon}
               accept={accept}
               onChange={handleChange}
-              className="pl-10 w-full border p-2 rounded-lg outline-none file:mr-4 file:py-2 file:px-4 file:rounded-md file:border-0 file:bg-accent-light file:text-white hover:opacity-85"
             />
           ) : (
-            <input
+            <Input
               type="text"
               name={name}
-              placeholder={label + '...'}
+              icon={Icon}
+              placeholder={`${label}...`}
               value={formData[name]}
               onChange={handleChange}
-              className="pl-10 w-full px-4 py-2 border rounded-lg outline-none focus:border-blue-500 dark:focus:border-blue-400"
             />
           )}
         </div>
       ))}
 
-      <button
+      <Button
+        text={loading ? <Spinner /> : `Upload`}
         onClick={handleUpload}
-        className="w-full px-6 py-3 mt-4 text-lg font-semibold rounded-lg bg-primary-light text-white hover:opacity-90 cursor-pointer transition flex items-center justify-center gap-2"
+        variant="primary"
         disabled={loading}
-      >
-        {loading ? <Spinner /> : <UploadCloud size={20} />} Upload
-      </button>
+        className="w-full mt-4 flex items-center justify-center gap-2"
+      />
     </div>
   );
 }
