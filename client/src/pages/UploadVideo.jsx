@@ -54,7 +54,13 @@ export default function UploadVideo() {
     { label: 'Video Title', name: 'title', Icon: <Text /> },
     { label: 'Video Description', name: 'description', Icon: <Text />, textarea: true },
     { label: 'Upload Video', name: 'videoFile', Icon: <Video />, type: 'file', accept: 'video/*' },
-    { label: 'Upload Thumbnail', name: 'thumbnail', Icon: <Image />, type: 'file', accept: 'image/*' },
+    {
+      label: 'Upload Thumbnail',
+      name: 'thumbnail',
+      Icon: <Image />,
+      type: 'file',
+      accept: 'image/*',
+    },
   ];
 
   return (
@@ -81,13 +87,7 @@ export default function UploadVideo() {
               rows="4"
             />
           ) : type === 'file' ? (
-            <Input
-              type="file"
-              name={name}
-              icon={Icon}
-              accept={accept}
-              onChange={handleChange}
-            />
+            <Input type="file" name={name} icon={Icon} accept={accept} onChange={handleChange} />
           ) : (
             <Input
               type="text"
