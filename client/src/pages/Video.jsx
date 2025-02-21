@@ -95,10 +95,11 @@ export default function VideoPage() {
             {['Comments', 'Suggested'].map((tab) => (
               <button
                 key={tab}
-                className={`flex-1 p-3 text-center font-medium text-lg transition border-b-4 ${activeTab === tab.toLowerCase()
-                  ? 'border-primary-light dark:border-primary-dark text-primary-light dark:text-primary-dark'
-                  : 'border-transparent hover:border-blue-300'
-                  }`}
+                className={`flex-1 p-3 text-center font-medium text-lg transition border-b-4 ${
+                  activeTab === tab.toLowerCase()
+                    ? 'border-primary-light dark:border-primary-dark text-primary-light dark:text-primary-dark'
+                    : 'border-transparent hover:border-blue-300'
+                }`}
                 onClick={() => setActiveTab(tab.toLowerCase())}
               >
                 {tab}
