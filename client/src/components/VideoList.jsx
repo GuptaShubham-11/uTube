@@ -23,6 +23,7 @@ const VideoList = () => {
         if (response.statusCode < 400) {
           setAlert({ type: 'success', message: 'Videos fetched successfully!' });
           setVideos(response.message);
+          dispatch(setVideo({ allVideos: response.message }));
         } else {
           setAlert({ type: 'error', message: 'Failed to fetch videos.' });
         }
@@ -38,8 +39,7 @@ const VideoList = () => {
   const handleVideoClick = (video) => {
     // Handle video click event
     if (video) {
-      console.log(video);
-      dispatch(setVideo(video));
+      dispatch(setVideo({ video }));
       navigate(`/video`);
     }
   };
@@ -60,7 +60,7 @@ const VideoList = () => {
         </div>
       )}
       <h2 className="text-2xl font-bold mb-4 flex items-center gap-2">
-        <Video size={24} /> Videos
+        <Video size={32} /> Videos
       </h2>
       {videos.length > 0 ? (
         <div className="grid grid-cols-1 sm:grid-cols-2 md:grid-cols-3 gap-4">
@@ -71,12 +71,12 @@ const VideoList = () => {
               onClick={() => handleVideoClick(video)}
             >
               <img
-                src={video.thumbnail}
-                alt={video.title}
+                src={video?.thumbnail}
+                alt={video?.title}
                 className="w-full h-40 object-cover rounded"
               />
-              <h3 className="mt-2 font-semibold text-lg">{video.title}</h3>
-              <p className="text-sm text-gray-600">{video.views} views</p>
+              <h3 className="mt-2 font-semibold text-lg">{video?.title}</h3>
+              <p className="text-sm text-text-light dark:text-text-dark">{video?.views} views</p>
             </div>
           ))}
         </div>

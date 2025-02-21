@@ -40,6 +40,15 @@ const getAllPlaylist = async (id) => {
   }
 };
 
+const getPlaylistById = async (id) => {
+  try {
+    const response = await apiClient.get(`/api/v1/playlist/${id}`);
+    return response.data;
+  } catch (error) {
+    return error.response.data;
+  }
+};
+
 const deletePlaylist = async (id) => {
   try {
     const response = await apiClient.delete(`/api/v1/playlist/${id}`);
@@ -60,7 +69,7 @@ const updatePlaylist = async (id, data) => {
 
 const addVideoToPlaylist = async (playlistId, videoId) => {
   try {
-    const response = await apiClient.patch(`/api/v1/playlists/add/${videoId}/${playlistId}`);
+    const response = await apiClient.patch(`/api/v1/playlist/add/${videoId}/${playlistId}`);
     return response.data;
   } catch (error) {
     return error.response.data;
@@ -69,7 +78,7 @@ const addVideoToPlaylist = async (playlistId, videoId) => {
 
 const removeVideoFromPlaylist = async (playlistId, videoId) => {
   try {
-    const response = await apiClient.patch(`/api/v1/playlists/remove/${videoId}/${playlistId}`);
+    const response = await apiClient.patch(`/api/v1/playlist/remove/${videoId}/${playlistId}`);
     return response.data;
   } catch (error) {
     return error.response.data;
@@ -83,4 +92,5 @@ export const playlistApi = {
   updatePlaylist,
   addVideoToPlaylist,
   removeVideoFromPlaylist,
+  getPlaylistById,
 };

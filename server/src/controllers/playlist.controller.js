@@ -1,8 +1,9 @@
-import { isValidObjectId } from "mongoose";
+import mongoose, { isValidObjectId } from "mongoose";
 import { Playlist } from "../models/playlist.model.js";
 import { ApiError } from "../utils/ApiError.js";
 import { ApiResponse } from "../utils/ApiResponse.js";
 import { asyncHandler } from "../utils/asyncHandler.js";
+import { User } from "../models/user.model.js";
 
 const createPlaylist = asyncHandler(async (req, res) => {
   //TODO: create playlist
@@ -50,7 +51,7 @@ const getUserPlaylists = asyncHandler(async (req, res) => {
   const playlists = await Playlist.aggregate([
     {
       $match: {
-        $owner: mongoose.Types.ObjectId(userId),
+        owner: new mongoose.Types.ObjectId(userId),
       },
     },
     {
@@ -96,7 +97,7 @@ const getPlaylistById = asyncHandler(async (req, res) => {
   }
 
   const playlist = await Playlist.findById(playlistId)
-    .populate("video")
+    .populate("videos")
     .populate("owner");
 
   if (!playlist) {

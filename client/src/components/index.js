@@ -14,6 +14,9 @@ import Playlist from './Playlist.jsx';
 import WatchHistory from './WatchHistory.jsx';
 import Comments from './Comments.jsx';
 import SuggestedVideos from './SuggestedVideos.jsx';
+import SinglePlaylist from './SinglePlaylist.jsx';
+import Button from './Button.jsx';
+import Input from './Input.jsx';
 
 export {
   Header,
@@ -32,4 +35,7 @@ export {
   WatchHistory,
   Comments,
   SuggestedVideos,
+  SinglePlaylist,
+  Button,
+  Input,
 };

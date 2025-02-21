@@ -60,7 +60,6 @@ export default function ProfileDropdown() {
               setLoading(true);
               try {
                 const response = await userApi.logout();
-                console.log(response);
 
                 setLoading(false);
 

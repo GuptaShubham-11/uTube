@@ -2,87 +2,108 @@ import { useState, useEffect } from 'react';
 import { UserRound, Trash2, Edit } from 'lucide-react';
 import { commentApi } from '../api/comment.js';
 import { useSelector } from 'react-redux';
+import { Alert, Spinner, Input, Button } from '../components';
 
 const Comments = ({ videoId }) => {
   const [comments, setComments] = useState([]);
   const [commentText, setCommentText] = useState('');
   const [editingCommentId, setEditingCommentId] = useState(null);
   const [editingText, setEditingText] = useState('');
+  const [alert, setAlert] = useState(null);
+  const [loading, setLoading] = useState(false);
   const user = useSelector((state) => state.auth.user);
 
-  // Fetch comments on mount
-  useEffect(() => {
-    const fetchComments = async () => {
-      const response = await commentApi.getAllVideoComments(videoId);
+  console.log(videoId);
 
-      if (response?.statusCode < 400) {
-        setComments(response.message?.comments);
-      } else {
-        console.error('Failed to fetch comments');
-      }
-    };
+  // Fetch comments on mount
+  const fetchComments = async () => {
+    setLoading(true);
+    const response = await commentApi.getAllVideoComments(videoId);
+    setLoading(false);
+
+    if (response?.statusCode < 400) {
+      setComments(response.message?.comments);
+      setAlert({ type: 'success', message: 'Comments fetched successfully!' });
+    } else {
+      setAlert({ type: 'error', message: response?.message || 'Failed to fetch comments' });
+    }
+  };
+
+  useEffect(() => {
     fetchComments();
   }, [videoId]);
 
   // Add a new comment
   const handleAddComment = async () => {
     if (!commentText.trim()) return;
+    setLoading(true);
     const response = await commentApi.addComment(videoId, commentText);
+    setLoading(false);
 
     if (response?.statusCode < 400) {
+      setAlert({ type: 'success', message: 'Comment added successfully!' });
       setComments((prev) => [...prev, response.message]);
       setCommentText('');
     } else {
-      console.error(response?.message || 'Failed to add comment');
+      setAlert({ type: 'error', message: response?.message || 'Failed to add comment' });
     }
   };
 
   // Update an existing comment
   const handleUpdateComment = async (commentId) => {
     if (!editingText.trim()) return;
+    setLoading(true);
     const response = await commentApi.updateComment(commentId, editingText);
+    setLoading(false);
 
     if (response?.statusCode < 400) {
+      setAlert({ type: 'success', message: 'Comment updated successfully!' });
       setComments((prev) =>
         prev.map((c) => (c._id === commentId ? { ...c, content: editingText } : c))
       );
       setEditingCommentId(null);
       setEditingText('');
     } else {
-      console.error(response?.message || 'Failed to update comment');
+      setAlert({ type: 'error', message: response?.message || 'Failed to update comment' });
     }
   };
 
   // Delete a comment
   const handleDeleteComment = async (commentId) => {
+    setLoading(true);
     const response = await commentApi.deleteComment(commentId);
-
+    setLoading(false);
     if (response?.statusCode < 400) {
+      setAlert({ type: 'success', message: 'Comment deleted successfully!' });
       setComments((prev) => prev.filter((c) => c._id !== commentId));
     } else {
-      console.error(response?.message || 'Failed to delete comment');
+      setAlert({ type: 'error', message: response?.message || 'Failed to delete comment' });
     }
   };
 
   return (
     <div className="mt-6">
+      {alert && (
+        <div className="fixed top-25 right-4 z-50">
+          <Alert type={alert.type} message={alert.message} onClose={() => setAlert(null)} />
+        </div>
+      )}
       {/* Add Comment */}
-      <h3 className="text-xl font-semibold mb-3">Comments</h3>
-      <div className="flex items-center gap-3 mb-6">
-        <UserRound size={30} className="text-gray-600 dark:text-gray-300" />
-        <input
+      <div className="flex items-center justify-center gap-3 mb-6">
+        <Input
           type="text"
           placeholder="Add a comment..."
-          className="flex-1 px-4 py-2 rounded-lg dark:bg-gray-800 bg-gray-200 text-black dark:text-white focus:outline-none"
           value={commentText}
+          icon={<UserRound />}
           onChange={(e) => setCommentText(e.target.value)}
         />
-        <button
+        <Button
           onClick={handleAddComment}
-          className="px-4 py-2 bg-green-600 hover:bg-green-700 text-white rounded-lg"
-        >
-          Post
-        </button>
+          text={loading ? <Spinner /> : 'Post'}
+          variant="secondary"
+          isLoading={loading}
+          className="mb-4 py-3"
+        />
       </div>
 
       {/* Display Comments */}

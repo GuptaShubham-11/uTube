@@ -110,7 +110,11 @@ export default function Signup() {
                 {showPassword ? <EyeOff /> : <Eye />}
               </button>
             </div>
-            <Button text={loading ? <Spinner /> : 'Sign Up'} onClick={handleSubmit} />
+            <Button
+              text={loading ? <Spinner /> : 'Sign Up'}
+              onClick={handleSubmit}
+              className="w-full"
+            />
             <p className="text-center text-text-light dark:text-text-dark font-medium">
               Already have an account?{' '}
               <Link to="/login" className="text-blue-600 hover:underline">

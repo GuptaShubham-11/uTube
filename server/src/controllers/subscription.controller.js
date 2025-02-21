@@ -8,19 +8,19 @@ import { asyncHandler } from "../utils/asyncHandler.js";
 const toggleSubscription = asyncHandler(async (req, res) => {
   // TODO: toggle subscription
   const { channelId } = req.params;
-  const { userId } = req.user;
+  const { _id } = req.user;
 
   if (!isValidObjectId(channelId)) {
     throw new ApiError(400, "Invalid channel Id!");
   }
 
-  if (!isValidObjectId(userId)) {
+  if (!isValidObjectId(_id)) {
     throw new ApiError(400, "Invalid user Id!");
   }
 
   const existingSubscriber = await Subscription.findOne({
     channel: channelId,
-    subscriber: userId,
+    subscriber: _id,
   });
 
   if (existingSubscriber) {
@@ -32,7 +32,7 @@ const toggleSubscription = asyncHandler(async (req, res) => {
 
   const newSubscription = await Subscription.create({
     channel: channelId,
-    subscriber: userId,
+    subscriber: _id,
   });
 
   return res

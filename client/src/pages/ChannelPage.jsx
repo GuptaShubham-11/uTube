@@ -1,8 +1,10 @@
 import { useEffect, useState } from 'react';
 import { userApi } from '../api/user.js';
-import { useSelector } from 'react-redux';
+import { subscriptionApi } from '../api/subscription.js';
+import { useSelector, useDispatch } from 'react-redux';
 import { Check, UserRound, Camera, Image as ImageIcon, Save, EditIcon } from 'lucide-react';
 import { Alert, Spinner, VideoList, Playlist, WatchHistory } from '../components';
+import { setVideo } from '../features/videoSlice.js';
 
 export default function ChannelPage() {
   const [channelData, setChannelData] = useState(null);
@@ -11,27 +13,48 @@ export default function ChannelPage() {
   const [loading, setLoading] = useState(false);
   const [editingName, setEditingName] = useState(false);
   const [newName, setNewName] = useState('');
+  const [isSubscribed, setIsSubscribed] = useState(channelData?.isSubscribed);
   const [activeTab, setActiveTab] = useState('videos');
+  const dispatch = useDispatch();
+
+  const fetchChannelData = async () => {
+    try {
+      const response = await userApi.getUserChannelProfile(user?._id);
+      if (response.statusCode < 400) {
+        setChannelData(response?.message);
+        setNewName(response?.message?.fullname);
+        setIsSubscribed(response?.message?.isSubscribed);
+        dispatch(setVideo({ isSubscribed: response?.message?.isSubscribed }));
+      } else {
+        setAlert({ type: 'error', message: 'Failed to fetch channel data.' });
+      }
+    } catch (error) {
+      setAlert({ type: 'error', message: error.message || 'Failed to fetch channel data.' });
+    }
+  };
+
+  const toggleSubscribe = async () => {
+    setLoading(true);
+    try {
+      const response = await subscriptionApi.toggleSubscribeButton(channelData?._id);
+      setLoading(false);
+
+      if (response.statusCode < 400) {
+        setChannelData({ ...channelData, isSubscribed });
+        setIsSubscribed(!isSubscribed);
+        dispatch(setVideo({ isSubscribed }));
+      } else {
+        setAlert({ type: 'error', message: 'Failed to toggle subscription.' });
+      }
+    } catch (error) {
+      setLoading(false);
+      setAlert({ type: 'error', message: error.message || 'Failed to toggle subscription.' });
+    }
+  };
 
   useEffect(() => {
-    const fetchChannelData = async () => {
-      setLoading(true);
-      try {
-        const response = await userApi.getUserChannelProfile(user?._id);
-        if (response.statusCode < 400) {
-          setChannelData(response?.message);
-          setNewName(response?.message?.fullname);
-        } else {
-          setAlert({ type: 'error', message: 'Failed to fetch channel data.' });
-        }
-      } catch (error) {
-        setAlert({ type: 'error', message: error.message || 'Failed to fetch channel data.' });
-      } finally {
-        setLoading(false);
-      }
-    };
     fetchChannelData();
-  }, [user]);
+  }, [user, isSubscribed]);
 
   const handleNameChange = async () => {
     try {
@@ -68,16 +91,8 @@ export default function ChannelPage() {
     }
   };
 
-  if (loading) {
-    return (
-      <div className="flex items-center justify-center">
-        <Spinner size="40" />
-      </div>
-    );
-  }
-
   return (
-    <div className="min-h-screen font-sans">
+    <div className="mt-16 min-h-screen font-sans">
       {alert && (
         <div className="fixed top-4 right-4 z-50">
           <Alert type={alert.type} message={alert.message} onClose={() => setAlert(null)} />
@@ -87,12 +102,12 @@ export default function ChannelPage() {
       {/* Banner Image */}
       <div className="relative group">
         <img
-          src={channelData?.coverImage || 'https://source.unsplash.com/1200x400/?technology'}
+          src={user?.coverImage || 'https://source.unsplash.com/1200x400/?technology'}
           alt="Channel Banner"
           className="w-full h-64 md:h-70 object-cover"
         />
-        <label className="absolute bottom-4 right-4 cursor-pointer bg-black bg-opacity-60 p-2 rounded-full">
-          <ImageIcon className="text-white" size={24} />
+        <label className="absolute bottom-4 right-4 cursor-pointer bg-background-dark hover:bg-black p-2 rounded">
+          <ImageIcon className="text-white" size={20} />
           <input
             type="file"
             accept="image/*"
@@ -103,16 +118,16 @@ export default function ChannelPage() {
       </div>
 
       {/* Channel Info */}
-      <div className="p-6 flex flex-col md:flex-row items-center justify-between bg-white dark:bg-gray-900 border-b">
+      <div className="p-6 flex flex-col md:flex-row items-center justify-between border border-secondary-light dark:border-secondary-dark">
         <div className="flex items-center gap-4">
           <div className="relative group">
             <img
-              src={channelData?.avatar || 'https://source.unsplash.com/100x100/?person'}
+              src={user?.avatar || 'https://source.unsplash.com/100x100/?person'}
               alt="Profile"
-              className="w-28 h-28 rounded-full border-4 border-blue-500 object-cover"
+              className="w-28 h-28 rounded-full border-4 border-primary-light dark:border-primary-dark object-cover"
             />
-            <label className="absolute bottom-2 right-2 cursor-pointer bg-black bg-opacity-60 p-2 rounded-full">
-              <Camera className="text-white" size={20} />
+            <label className="absolute bottom-1 right-2 cursor-pointer bg-background-dark hover:bg-black bg-opacity-60 p-2 rounded-full">
+              <Camera className="text-white" size={18} />
               <input
                 type="file"
                 accept="image/*"
@@ -130,34 +145,36 @@ export default function ChannelPage() {
                   onChange={(e) => setNewName(e.target.value)}
                   className="text-xl font-bold border-b-2 border-blue-500 focus:outline-none bg-transparent text-black dark:text-white"
                 />
-                <button onClick={handleNameChange} className="text-green-500">
+                <button onClick={handleNameChange} className="text-accent-light">
                   <Save size={24} />
                 </button>
               </div>
             ) : (
               <h1
-                className="text-3xl font-bold cursor-pointer text-black dark:text-white"
+                className="flex text-3xl font-bold cursor-pointer text-black dark:text-white"
                 onClick={() => setEditingName(true)}
               >
-                {channelData?.fullname || 'Unknown'} <EditIcon size={20} />
+                {user?.fullname || 'Unknown'}{' '}
+                <EditIcon size={20} className="hover:text-cyan-400 dark:hover:text-cyan-600" />
               </h1>
             )}
-            <p className="text-gray-600 dark:text-gray-300">
+            <p className="text-text-light dark:text-text-dark font-semibold">
               {channelData?.subscribersToCount?.toLocaleString()} subscribers
             </p>
           </div>
         </div>
         <button
           className={`mt-4 md:mt-0 px-6 py-3 flex items-center gap-2 text-white rounded-lg shadow-lg transition
-            ${channelData?.isSubscribed ? 'bg-gray-500' : 'bg-red-600'}`}
+            ${isSubscribed ? 'bg-gray-500' : 'bg-red-600'}`}
+          onClick={toggleSubscribe}
         >
-          {channelData?.isSubscribed ? <Check size={20} /> : <UserRound size={20} />}
-          {channelData?.isSubscribed ? 'Subscribed' : 'Subscribe'}
+          {loading ? <Spinner /> : !isSubscribed ? <UserRound /> : <Check size={20} />}
+          {isSubscribed ? 'Subscribed' : 'Subscribe'}
         </button>
       </div>
 
       {/* Tab Navigation */}
-      <div className="flex border-b bg-gray-100 dark:bg-gray-800">
+      <div className="flex border-b">
         {['videos', 'playlists', 'history'].map((tab) => (
           <button
             key={tab}

@@ -36,7 +36,7 @@ export default function Subscribed() {
   };
 
   return (
-    <div className="min-h-screen bg-background-light dark:bg-background-dark text-text-light dark:text-text-dark p-8">
+    <div className="mt-16 min-h-screen bg-background-light dark:bg-background-dark text-text-light dark:text-text-dark p-8">
       <h1 className="text-3xl font-bold mb-6">Subscribed Channels</h1>
 
       {subscribedChannels.length === 0 ? (
@@ -74,7 +74,7 @@ export default function Subscribed() {
               {/* Unsubscribe Button */}
               <button
                 onClick={() => handleUnsubscribe(channel.id)}
-                className="px-4 py-2 flex items-center gap-2 text-white bg-accent-light dark:bg-accent-dark hover:opacity-90 rounded-lg transition-all"
+                className="px-4 py-2 flex items-center gap-2 text-white bg-accent-light hover:brightness-125 cursor-pointer rounded-lg transition-all"
               >
                 <XCircle size={18} />
                 Unsubscribe

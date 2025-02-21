@@ -102,6 +102,7 @@ export default function Login() {
             onClick={handleSubmit}
             isLoading={loading}
             variant="primary"
+            className="w-full"
           />
           <p className="text-center text-text-light dark:text-text-dark font-medium">
             Create a new account?{' '}

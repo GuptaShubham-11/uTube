@@ -8,7 +8,7 @@ export default function Header() {
 
   return (
     <header
-      className="p-4 flex items-center justify-between shadow-md border-b 
+      className="fixed top-0 left-0 w-full z-50 p-4 flex items-center justify-between shadow-md border-b 
             bg-background-light text-text-light border-secondary-light 
             dark:bg-background-dark dark:text-text-dark dark:border-secondary-dark transition duration-300"
     >
@@ -26,11 +26,11 @@ export default function Header() {
           <input
             type="text"
             placeholder="Search videos..."
-            className="w-full px-4 py-2 rounded-full border bg-white text-text-light 
+            className="w-full px-4 py-2 rounded-full border bg-white text-black 
                         border-secondary-light focus:outline-none"
           />
           <button
-            className="absolute right-2 top-1/2 transform -translate-y-1/2 p-2 rounded-full 
+            className="absolute right-2 top-1/2 transform -translate-y-1/2 p-2 rounded-full cursor-pointer 
                     bg-primary-light text-white dark:bg-primary-dark dark:text-background-dark hover:brightness-110"
           >
             <Search size={18} />
