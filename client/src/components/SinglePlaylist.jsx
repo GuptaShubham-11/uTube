@@ -5,13 +5,16 @@ import { useNavigate } from 'react-router-dom';
 import { setVideo } from '../features/videoSlice.js';
 import { playlistApi } from '../api/playlist.js';
 
-const SinglePlaylist = ({ playlist }) => {
+const SinglePlaylist = ({ playlist, channelId, onClose }) => {
   const [videos, setVideos] = useState([]);
   const [showPopup, setShowPopup] = useState(false);
   const [selectedVideos, setSelectedVideos] = useState([]);
   const dispatch = useDispatch();
   const navigate = useNavigate();
   const availableVideos = useSelector((state) => state.video.allVideos);
+  const user = useSelector((state) => state.auth.user);
+
+  const isOwner = user._id === channelId;
 
   const fetchPlaylist = async () => {
     try {
@@ -51,22 +54,29 @@ const SinglePlaylist = ({ playlist }) => {
   };
 
   return (
-    <div className="p-6">
+    <div className="p-6 relative">
       {/* Header Section */}
-      <div className="mb-6 flex justify-between items-center border-b pb-4">
-        <div>
-          <h2 className="text-3xl font-bold mb-2 flex items-center gap-2">
-            <Video size={28} /> {playlist.name}
-          </h2>
-          <p className="text-gray-500">{playlist.description}</p>
+      {isOwner && (
+        <div className="mb-6 flex justify-between items-center border-b pb-4">
+          <div>
+            <h2 className="text-3xl font-bold mb-2 flex items-center gap-2">
+              <Video size={28} /> {playlist.name}
+            </h2>
+            <p className="text-gray-500">{playlist.description}</p>
+          </div>
+          <div className="flex items-center gap-4">
+            <button
+              className="bg-blue-600 hover:bg-blue-700 text-white px-4 py-2 rounded-lg flex items-center gap-2"
+              onClick={() => setShowPopup(true)}
+            >
+              <CircleFadingPlus size={20} /> Add Video
+            </button>
+            <button onClick={onClose} className="text-red-600 hover:text-red-800">
+              <XCircle size={28} />
+            </button>
+          </div>
         </div>
-        <button
-          className="bg-blue-600 hover:bg-blue-700 text-white px-4 py-2 rounded-lg flex items-center gap-2"
-          onClick={() => setShowPopup(true)}
-        >
-          <CircleFadingPlus size={20} /> Add Video
-        </button>
-      </div>
+      )}
 
       {/* Video List Section */}
       <div className="grid grid-cols-1 sm:grid-cols-2 md:grid-cols-3 gap-6">
@@ -89,15 +99,17 @@ const SinglePlaylist = ({ playlist }) => {
               {video?.title}
             </h3>
             <p className="text-sm text-gray-500 mb-4">{video?.description}</p>
-            <button
-              className="bg-red-600 hover:bg-red-700 p-2 rounded absolute top-3 right-3"
-              onClick={(e) => {
-                e.stopPropagation();
-                handleDeleteVideo(video._id);
-              }}
-            >
-              <Trash2 size={18} />
-            </button>
+            {isOwner && (
+              <button
+                className="bg-red-600 hover:bg-red-700 p-2 rounded absolute top-3 right-3"
+                onClick={(e) => {
+                  e.stopPropagation();
+                  handleDeleteVideo(video._id);
+                }}
+              >
+                <Trash2 size={18} />
+              </button>
+            )}
           </div>
         ))}
       </div>

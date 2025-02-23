@@ -2,6 +2,7 @@ import { asyncHandler } from "../utils/asyncHandler.js";
 import { ApiError } from "../utils/ApiError.js";
 import { ApiResponse } from "../utils/ApiResponse.js";
 import { User } from "../models/user.model.js";
+import { Video } from "../models/video.model.js";
 import { deleteOnCloudinary, uploadOnCloudinary } from "../utils/cloudinary.js";
 import jwt from "jsonwebtoken";
 import mongoose, { isValidObjectId } from "mongoose";
@@ -329,6 +330,49 @@ const getWatchHistory = asyncHandler(async (req, res) => {
     );
 });
 
+const updateWatchHistory = async (req, res) => {
+  try {
+    const userId = req.user._id;
+    const { videoId } = req.params;
+
+    console.log(videoId);
+
+    const HISTORY_LIMIT = 30;
+
+    // Check if the video exists
+    const videoExists = await Video.exists({ _id: videoId });
+    if (!videoExists) {
+      return res.status(404).json(new ApiError(404, "Video not found"));
+    }
+
+    // Find user and update watch history
+    const user = await User.findById(userId);
+    if (!user) {
+      return res.status(404).json(new ApiError(404, "User not found"));
+    }
+
+    // Remove video if it already exists in history
+    user.watchHistory = user.watchHistory.filter((id) => id.toString() !== videoId);
+
+    // Add new video to the start (most recent)
+    user.watchHistory.unshift(videoId);
+
+    // Trim history to maintain limit
+    if (user.watchHistory.length > HISTORY_LIMIT) {
+      user.watchHistory = user.watchHistory.slice(0, HISTORY_LIMIT);
+    }
+
+    await user.save();
+
+    res.status(200).json(
+      new ApiResponse(200, { watchHistory: user.watchHistory }, "Watch history updated successfully."),
+    );
+  } catch (error) {
+    res.status(500).json(new ApiError(500, error.message || "Server error updating watch history."));
+  }
+};
+
+
 export {
   registerUser,
   loginUser,
@@ -341,4 +385,5 @@ export {
   updateUserCoverImage,
   getUserChannelProfile,
   getWatchHistory,
+  updateWatchHistory
 };

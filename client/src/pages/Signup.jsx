@@ -1,9 +1,8 @@
 import { useState } from 'react';
 import { Eye, EyeOff, Mail, Lock, User, ImageUp } from 'lucide-react';
-import { Link } from 'react-router-dom';
+import { Link, useNavigate } from 'react-router-dom';
 import { Alert, Spinner, Input, Button } from '../components';
 import { userApi } from '../api/user.js';
-import { useNavigate } from 'react-router-dom';
 
 export default function Signup() {
   const [formData, setFormData] = useState({
@@ -12,13 +11,22 @@ export default function Signup() {
     password: '',
     avatar: null,
   });
+
   const [showPassword, setShowPassword] = useState(false);
   const [alert, setAlert] = useState(null);
   const [loading, setLoading] = useState(false);
+  const [avatarPreview, setAvatarPreview] = useState(null);
   const navigate = useNavigate();
 
   const handleChange = (e) => setFormData({ ...formData, [e.target.name]: e.target.value });
-  const handleFileChange = (e) => setFormData({ ...formData, [e.target.name]: e.target.files[0] });
+
+  const handleFileChange = (e) => {
+    const file = e.target.files[0];
+    if (file) {
+      setFormData({ ...formData, avatar: file });
+      setAvatarPreview(URL.createObjectURL(file));
+    }
+  };
 
   const handleSubmit = async (e) => {
     e.preventDefault();
@@ -44,9 +52,7 @@ export default function Signup() {
 
       if (response.statusCode < 400) {
         setAlert({ type: 'success', message: 'Sign up successful!' });
-        setTimeout(() => {
-          navigate('/login');
-        }, 3000);
+        setTimeout(() => navigate('/login'), 2000);
       } else {
         setAlert({ type: 'error', message: response.message || 'Sign up failed.' });
       }
@@ -56,73 +62,59 @@ export default function Signup() {
     }
   };
 
-  const inputFields = [
-    { name: 'fullname', type: 'text', icon: <User />, placeholder: 'Full Name' },
-    { name: 'email', type: 'email', icon: <Mail />, placeholder: 'Email' },
-    {
-      name: 'avatar',
-      type: 'file',
-      icon: <ImageUp />,
-      placeholder: 'Profile Picture',
-      accept: 'image/*',
-    },
-    {
-      name: 'password',
-      type: showPassword ? 'text' : 'password',
-      icon: <Lock />,
-      placeholder: 'Password',
-    },
-  ];
-
   return (
-    <div>
+    <div className="flex justify-center items-center min-h-screen px-4">
+      {/* Alert Notification */}
       {alert && (
-        <div className="fixed top-25 right-4 z-50">
+        <div className="fixed top-5 right-5 z-50">
           <Alert type={alert.type} message={alert.message} onClose={() => setAlert(null)} />
         </div>
       )}
-      <div className="flex justify-center items-center min-h-screen">
-        <div className="border p-8 rounded-lg shadow-lg w-full max-w-md bg-white dark:bg-gray-800">
-          <h2 className="text-3xl font-semibold text-center mb-6 text-gray-800 dark:text-white">
-            Sign Up
-          </h2>
-          <form onSubmit={handleSubmit} className="space-y-5">
-            {inputFields.map((field, index) => (
-              <div key={index} className="relative">
-                <Input
-                  type={field.type}
-                  name={field.name}
-                  placeholder={field.placeholder}
-                  icon={field.icon}
-                  value={formData[field.name]}
-                  onChange={field.name === 'avatar' ? handleFileChange : handleChange}
-                  accept={field.accept}
-                />
-              </div>
-            ))}
-            <div className="flex items-center justify-between">
-              <label className="text-gray-700 dark:text-gray-300">Show Password</label>
-              <button
-                type="button"
-                onClick={() => setShowPassword(!showPassword)}
-                className="text-gray-600 dark:text-gray-300"
-              >
-                {showPassword ? <EyeOff /> : <Eye />}
-              </button>
-            </div>
-            <Button
-              text={loading ? <Spinner /> : 'Sign Up'}
-              onClick={handleSubmit}
-              className="w-full"
+
+      <div className="border p-8 rounded-lg shadow-lg w-full max-w-md bg-white dark:bg-gray-800">
+        {/* Signup Heading */}
+        <h2 className="text-3xl font-bold text-center mb-6 text-gray-900 dark:text-white">Create an Account</h2>
+
+        {/* Signup Form */}
+        <form onSubmit={handleSubmit} className="space-y-5">
+          {/* Full Name */}
+          <Input type="text" name="fullname" placeholder="Full Name" icon={<User />} value={formData.fullname} onChange={handleChange} />
+
+          {/* Email */}
+          <Input type="email" name="email" placeholder="Email Address" icon={<Mail />} value={formData.email} onChange={handleChange} />
+
+          {/* Password */}
+          <div className="relative">
+            <Input
+              type={showPassword ? 'text' : 'password'}
+              name="password"
+              placeholder="Password"
+              icon={<Lock />}
+              value={formData.password}
+              onChange={handleChange}
             />
-            <p className="text-center text-text-light dark:text-text-dark font-medium">
-              Already have an account?{' '}
-              <Link to="/login" className="text-blue-600 hover:underline">
-                Login
-              </Link>
-            </p>
-          </form>
-        </div>
+            <button type="button" onClick={() => setShowPassword(!showPassword)} className="absolute right-3 top-3 text-gray-500 dark:text-gray-300">
+              {showPassword ? <EyeOff /> : <Eye />}
+            </button>
+          </div>
+
+          {/* Profile Picture Upload */}
+          <div className="relative">
+            <Input type="file" name="avatar" accept="image/*" icon={<ImageUp />} onChange={handleFileChange} />
+            {avatarPreview && <img src={avatarPreview} alt="Avatar Preview" className="w-16 h-16 rounded-full mx-auto mt-2" />}
+          </div>
+
+          {/* Signup Button */}
+          <Button text={loading ? <Spinner /> : 'Sign Up'} onClick={handleSubmit} className="w-full py-2" />
+
+          {/* Login Redirect */}
+          <p className="text-center text-gray-600 dark:text-gray-300">
+            Already have an account?{' '}
+            <Link to="/login" className="text-blue-600 hover:underline dark:text-blue-400">
+              Log in
+            </Link>
+          </p>
+        </form>
       </div>
     </div>
   );

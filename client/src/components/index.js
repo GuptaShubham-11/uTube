@@ -2,7 +2,6 @@ import Header from './Header.jsx';
 import Footer from './Footer.jsx';
 import Layout from './Layout.jsx';
 import ThemeToggle from './ThemeToggle.jsx';
-import VideoGrid from './VideoGrid.jsx';
 import VideoCard from './VideoCard.jsx';
 import ProfileDropdown from './ProfileDropdown.jsx';
 import HeroSection from './HeroSection.jsx';
@@ -17,13 +16,14 @@ import SuggestedVideos from './SuggestedVideos.jsx';
 import SinglePlaylist from './SinglePlaylist.jsx';
 import Button from './Button.jsx';
 import Input from './Input.jsx';
+import Subscribed from './subscribed.jsx';
+import Subscriber from './subscriber.jsx';
 
 export {
   Header,
   Footer,
   Layout,
   ThemeToggle,
-  VideoGrid,
   VideoCard,
   ProfileDropdown,
   HeroSection,
@@ -38,4 +38,6 @@ export {
   SinglePlaylist,
   Button,
   Input,
+  Subscribed,
+  Subscriber
 };

@@ -67,17 +67,21 @@ const getChannelStats = asyncHandler(async (req, res) => {
 });
 
 const getChannelVideos = asyncHandler(async (req, res) => {
-  const { _id } = req.user;
+  const { channelId } = req.params;
 
-  if (!isValidObjectId(_id)) {
-    throw new ApiError(400, "Invalid user Id");
+  if (!channelId) {
+    throw new ApiError(400, "Channel Id is required");
+  }
+
+  if (!isValidObjectId(channelId)) {
+    throw new ApiError(400, "Invalid channelId");
   }
 
   // Aggregate videos uploaded by the user (channel owner)
   const videos = await Video.aggregate([
     {
       $match: {
-        owner: new mongoose.Types.ObjectId(_id),
+        owner: new mongoose.Types.ObjectId(channelId),
       },
     },
     {

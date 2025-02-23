@@ -10,20 +10,17 @@ const Comments = ({ videoId }) => {
   const [editingCommentId, setEditingCommentId] = useState(null);
   const [editingText, setEditingText] = useState('');
   const [alert, setAlert] = useState(null);
-  const [loading, setLoading] = useState(false);
+  const [loading, setLoading] = useState({ fetch: false, add: false, update: false, delete: false });
   const user = useSelector((state) => state.auth.user);
-
-  console.log(videoId);
 
   // Fetch comments on mount
   const fetchComments = async () => {
-    setLoading(true);
+    setLoading((prev) => ({ ...prev, fetch: true }));
     const response = await commentApi.getAllVideoComments(videoId);
-    setLoading(false);
+    setLoading((prev) => ({ ...prev, fetch: false }));
 
     if (response?.statusCode < 400) {
-      setComments(response.message?.comments);
-      setAlert({ type: 'success', message: 'Comments fetched successfully!' });
+      setComments(response.message?.comments || []);
     } else {
       setAlert({ type: 'error', message: response?.message || 'Failed to fetch comments' });
     }
@@ -36,13 +33,12 @@ const Comments = ({ videoId }) => {
   // Add a new comment
   const handleAddComment = async () => {
     if (!commentText.trim()) return;
-    setLoading(true);
+    setLoading((prev) => ({ ...prev, add: true }));
     const response = await commentApi.addComment(videoId, commentText);
-    setLoading(false);
+    setLoading((prev) => ({ ...prev, add: false }));
 
     if (response?.statusCode < 400) {
-      setAlert({ type: 'success', message: 'Comment added successfully!' });
-      setComments((prev) => [...prev, response.message]);
+      setComments([...comments, response.message]);
       setCommentText('');
     } else {
       setAlert({ type: 'error', message: response?.message || 'Failed to add comment' });
@@ -52,15 +48,12 @@ const Comments = ({ videoId }) => {
   // Update an existing comment
   const handleUpdateComment = async (commentId) => {
     if (!editingText.trim()) return;
-    setLoading(true);
+    setLoading((prev) => ({ ...prev, update: true }));
     const response = await commentApi.updateComment(commentId, editingText);
-    setLoading(false);
+    setLoading((prev) => ({ ...prev, update: false }));
 
     if (response?.statusCode < 400) {
-      setAlert({ type: 'success', message: 'Comment updated successfully!' });
-      setComments((prev) =>
-        prev.map((c) => (c._id === commentId ? { ...c, content: editingText } : c))
-      );
+      setComments((prev) => prev.map((c) => (c._id === commentId ? { ...c, content: editingText } : c)));
       setEditingCommentId(null);
       setEditingText('');
     } else {
@@ -70,11 +63,11 @@ const Comments = ({ videoId }) => {
 
   // Delete a comment
   const handleDeleteComment = async (commentId) => {
-    setLoading(true);
+    setLoading((prev) => ({ ...prev, delete: true }));
     const response = await commentApi.deleteComment(commentId);
-    setLoading(false);
+    setLoading((prev) => ({ ...prev, delete: false }));
+
     if (response?.statusCode < 400) {
-      setAlert({ type: 'success', message: 'Comment deleted successfully!' });
       setComments((prev) => prev.filter((c) => c._id !== commentId));
     } else {
       setAlert({ type: 'error', message: response?.message || 'Failed to delete comment' });
@@ -84,10 +77,11 @@ const Comments = ({ videoId }) => {
   return (
     <div className="mt-6">
       {alert && (
-        <div className="fixed top-25 right-4 z-50">
+        <div className="fixed bottom-4 right-4 z-50">
           <Alert type={alert.type} message={alert.message} onClose={() => setAlert(null)} />
         </div>
       )}
+
       {/* Add Comment */}
       <div className="flex items-center justify-center gap-3 mb-6">
         <Input
@@ -99,10 +93,9 @@ const Comments = ({ videoId }) => {
         />
         <Button
           onClick={handleAddComment}
-          text={loading ? <Spinner /> : 'Post'}
+          text={loading.add ? <Spinner /> : 'Post'}
           variant="secondary"
-          isLoading={loading}
-          className="mb-4 py-3"
+          className="mb-4 px-4 py-3"
         />
       </div>
 
@@ -110,15 +103,10 @@ const Comments = ({ videoId }) => {
       <div className="space-y-4">
         {comments.length > 0 ? (
           comments.map((comment) => (
-            <div
-              key={comment._id}
-              className="p-4 border border-gray-300 dark:border-gray-600 rounded-lg"
-            >
-              {/* Comment Header */}
+            <div key={comment._id} className="p-4 border border-gray-300 dark:border-gray-600 rounded-lg">
               <div className="flex items-center justify-between">
                 <p className="font-semibold">{user?.fullname || 'User'}</p>
                 <div className="flex items-center gap-2">
-                  {/* Edit Button */}
                   <button
                     className="text-blue-600 hover:text-blue-700"
                     onClick={() => {
@@ -129,7 +117,6 @@ const Comments = ({ videoId }) => {
                     <Edit size={18} />
                   </button>
 
-                  {/* Delete Button */}
                   <button
                     className="text-red-600 hover:text-red-700"
                     onClick={() => handleDeleteComment(comment._id)}
@@ -139,7 +126,6 @@ const Comments = ({ videoId }) => {
                 </div>
               </div>
 
-              {/* Comment Content */}
               {editingCommentId === comment._id ? (
                 <div className="mt-2">
                   <input
@@ -152,7 +138,7 @@ const Comments = ({ videoId }) => {
                     className="mt-2 px-3 py-1 bg-blue-600 hover:bg-blue-700 text-white rounded"
                     onClick={() => handleUpdateComment(comment._id)}
                   >
-                    Update
+                    {loading.update ? <Spinner /> : 'Update'}
                   </button>
                   <button
                     className="mt-2 ml-2 px-3 py-1 bg-gray-500 hover:bg-gray-600 text-white rounded"

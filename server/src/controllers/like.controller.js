@@ -7,19 +7,19 @@ import { asyncHandler } from "../utils/asyncHandler.js";
 const toggleVideoLike = asyncHandler(async (req, res) => {
   //TODO: toggle like on video
   const { videoId } = req.params;
-  const { userId } = req.user;
+  const { _id } = req.user;
 
   if (!isValidObjectId(videoId)) {
     throw new ApiError(400, "Inavlid video Id");
   }
 
-  if (!isValidObjectId(userId)) {
+  if (!isValidObjectId(_id)) {
     throw new ApiError(400, "Inavlid user Id");
   }
 
   const existingLike = await Like.findOne({
     video: videoId,
-    likedBy: userId,
+    likedBy: _id,
   });
 
   if (existingLike) {
@@ -29,7 +29,7 @@ const toggleVideoLike = asyncHandler(async (req, res) => {
       .json(new ApiResponse(200, {}, "Like reomoved successfully."));
   }
 
-  const newLike = await Like.create({ video: videoId, likedBy: userId });
+  const newLike = await Like.create({ video: videoId, likedBy: _id });
   return res
     .status(200)
     .json(new ApiResponse(200, newLike, "Like added successfully."));

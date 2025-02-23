@@ -44,16 +44,19 @@ const toggleSubscription = asyncHandler(async (req, res) => {
 
 // controller to return subscriber list of a channel
 const getUserChannelSubscribers = asyncHandler(async (req, res) => {
-  const { channelId } = req.params;
+  const { userId } = req.params;
 
-  if (!isValidObjectId(channelId)) {
-    throw new ApiError(400, "Invalid channel Id!");
+  console.log(userId);
+
+
+  if (!isValidObjectId(userId)) {
+    throw new ApiError(400, "Invalid user Id!");
   }
 
-  const subscribers = Subscription.aggregate([
+  const subscribers = await Subscription.aggregate([
     {
       $match: {
-        channel: new mongoose.Types.ObjectId(channelId),
+        channel: new mongoose.Types.ObjectId(userId),
       },
     },
     {
@@ -65,20 +68,23 @@ const getUserChannelSubscribers = asyncHandler(async (req, res) => {
       },
     },
     {
+      $unwind: "$subscriberDetails", // Ensures the result is cleaner by removing nested arrays
+    },
+    {
       $project: {
         subscriber: 1,
-        subscriberDetails: {
-          _id: 1,
-          fullname: 1,
-          username: 1,
-          avatar: 1,
-        },
+        subscriberDetails: 1,
       },
     },
   ]);
 
+  console.log(subscribers);
+
+
   if (!subscribers.length) {
-    throw new ApiError(404, "No subscribers found for this channel!");
+    return res
+      .status(200)
+      .json(new ApiResponse(200, [], "No subscribers found!"));
   }
 
   return res
@@ -90,16 +96,16 @@ const getUserChannelSubscribers = asyncHandler(async (req, res) => {
 
 // controller to return channel list to which user has subscribed
 const getSubscribedChannels = asyncHandler(async (req, res) => {
-  const { subscriberId } = req.params;
+  const { channelId } = req.params;
 
-  if (!isValidObjectId(subscriberId)) {
+  if (!isValidObjectId(channelId)) {
     throw new ApiError(400, "Invalid subscriber Id!");
   }
 
   const channels = await Subscription.aggregate([
     {
       $match: {
-        subscriber: new mongoose.Types.ObjectId(subscriberId),
+        subscriber: new mongoose.Types.ObjectId(channelId),
       },
     },
     {

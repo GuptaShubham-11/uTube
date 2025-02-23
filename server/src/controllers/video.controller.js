@@ -37,15 +37,31 @@ const getAllVideos = asyncHandler(async (req, res) => {
       $limit: Number(limit),
     },
     {
+      // Lookup to populate owner details
+      $lookup: {
+        from: "users",
+        localField: "owner",
+        foreignField: "_id",
+        as: "ownerDetails",
+      },
+    },
+    {
+      $unwind: "$ownerDetails",
+    },
+    {
       // Project specific fields
       $project: {
         title: 1,
         description: 1,
         videoFile: 1,
         thumbnail: 1,
+        views: 1,
+        createdAt: 1,
+        "ownerDetails": 1,
       },
     },
   ]);
+
 
   const totalVideos = await Video.aggregate([
     {
@@ -147,13 +163,24 @@ const updateVideo = asyncHandler(async (req, res) => {
   const oldThumbnailPath = video.thumbnail;
   const newThumbnailPath = req.file?.path;
 
+  if (!newThumbnailPath) {
+    throw new ApiError(400, "Thumbnail is required for update!");
+  }
+
+  let thumbnail;
+
+  if (newThumbnailPath) {
+    thumbnail = await uploadOnCloudinary(newThumbnailPath, "image");
+  }
+
+
   const updateVideo = await Video.findByIdAndUpdate(
     videoId,
     {
       $set: {
         title,
         description,
-        thumbnail: newThumbnailPath?.url,
+        thumbnail: thumbnail?.url || video?.thumbnail,
       },
     },
     {
@@ -161,7 +188,7 @@ const updateVideo = asyncHandler(async (req, res) => {
     },
   );
 
-  await deleteOnCloudinary(oldThumbnailPath);
+  await deleteOnCloudinary(oldThumbnailPath, "image");
 
   return res
     .status(200)
@@ -223,11 +250,40 @@ const togglePublishStatus = asyncHandler(async (req, res) => {
     );
 });
 
+const updateVideoViews = asyncHandler(async (req, res) => {
+  const { videoId } = req.params;
+  console.log(videoId);
+
+
+  // Validate videoId
+  if (!videoId) {
+    throw new ApiError(400, "Video ID is required!");
+  }
+
+  // Fetch the video by ID
+  const video = await Video.findById(videoId).populate("owner");
+
+  if (!video) {
+    throw new ApiError(404, "Video not found!");
+  }
+
+  // Increment the `views` field
+  video.views += 1;
+
+  // Save the updated video
+  const updatedVideo = await video.save();
+
+  // Return the updated video
+  return res
+    .status(200)
+    .json(new ApiResponse(200, updatedVideo, "Video views updated successfully."));
+});
+
 const getSuggestedVideos = asyncHandler(async (req, res) => {
   //TODO: get suggested videos
   const {
     page = 1,
-    limit = 7,
+    limit = 10,
     query,
     sortBy = "createdAt",
     sortType = "asc",
@@ -280,4 +336,5 @@ export {
   deleteVideo,
   togglePublishStatus,
   getSuggestedVideos,
+  updateVideoViews
 };

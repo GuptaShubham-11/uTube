@@ -20,9 +20,9 @@ apiClient.interceptors.request.use(
   }
 );
 
-const getChannelVideos = async () => {
+const getChannelVideos = async (channelId) => {
   try {
-    const response = await apiClient.get(`/api/v1/dashboard/videos`);
+    const response = await apiClient.get(`/api/v1/dashboard/videos/${channelId}`);
     return response.data;
   } catch (error) {
     return error.response.data;

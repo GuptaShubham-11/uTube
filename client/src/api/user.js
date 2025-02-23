@@ -37,6 +37,15 @@ const logout = async () => {
   }
 };
 
+const refreshAccessToken = async (token) => {
+  try {
+    const response = await apiClient.post('/api/v1/users/refresh-token', token);
+    return response.data;
+  } catch (error) {
+    return error.response.data;
+  }
+};
+
 const updateFullname = async (data) => {
   try {
     const token = localStorage.getItem('accessToken');
@@ -95,12 +104,43 @@ const getUserChannelProfile = async (id) => {
   }
 };
 
+const getWatchHistory = async () => {
+  const token = localStorage.getItem('accessToken');
+  try {
+    const response = await apiClient.get('/api/v1/users/history', {
+      headers: {
+        Authorization: `Bearer ${token}`,
+      },
+    });
+    return response.data;
+  } catch (error) {
+    return error.response.data;
+  }
+}
+
+const updateWatchHistory = async (id) => {
+  const token = localStorage.getItem('accessToken');
+  try {
+    const response = await apiClient.post(`/api/v1/users/update-history/${id}`, {
+      headers: {
+        Authorization: `Bearer ${token}`,
+      },
+    });
+    return response.data;
+  } catch (error) {
+    return error.response.data;
+  }
+}
+
 export const userApi = {
   signUp,
   login,
   logout,
+  refreshAccessToken,
   getUserChannelProfile,
   updateFullname,
   updateAvatar,
   updateCoverImage,
+  getWatchHistory,
+  updateWatchHistory
 };

@@ -1,19 +1,21 @@
 import { BrowserRouter as Router, Routes, Route, Navigate } from 'react-router-dom';
 import { useEffect } from 'react';
 import { useSelector, useDispatch } from 'react-redux';
-import { login } from './features/authSlice.js';
+import { login, logout } from './features/authSlice.js';
 import { Layout } from './components';
 import {
   Videos,
   NotFound,
   UploadVideo,
   ChannelPage,
-  Subscribed,
+  Subscription,
   Video,
   Home,
   Signup,
   Login,
+  Search
 } from './pages';
+import { userApi } from './api/user.js';
 
 function App() {
   const theme = useSelector((state) => state.theme.theme);
@@ -25,13 +27,27 @@ function App() {
     root.classList.remove('light', 'dark');
     root.classList.add(theme);
 
-    const accessToken = localStorage.getItem('accessToken');
     const user = JSON.parse(localStorage.getItem('user'));
+    // refreshAccessToken(user?.refreshToken);
+
+    const accessToken = localStorage.getItem('accessToken');
 
     if (accessToken && user) {
       dispatch(login({ accessToken, user, refreshToken: null }));
     }
   }, [theme, dispatch]);
+
+  // const refreshAccessToken = async (token) => {
+  //   try {
+  //     const response = await userApi.refreshAccessToken(token);
+  //     if (response.success == false) {
+  //       dispatch(logout());
+  //     }
+
+  //   } catch (error) {
+  //     console.log(error);
+  //   }
+  // }
 
   const routes = [
     { path: '/', element: isAuthenticated ? <Videos /> : <Home /> },
@@ -39,9 +55,10 @@ function App() {
     { path: '/login', element: isAuthenticated ? <Navigate to="/" /> : <Login /> },
     { path: '/videos', element: isAuthenticated ? <Videos /> : <Navigate to="/login" /> },
     { path: '/upload', element: isAuthenticated ? <UploadVideo /> : <Navigate to="/login" /> },
-    { path: '/me', element: isAuthenticated ? <ChannelPage /> : <Navigate to="/login" /> },
-    { path: '/subscribed', element: isAuthenticated ? <Subscribed /> : <Navigate to="/login" /> },
+    { path: '/channel/:id', element: isAuthenticated ? <ChannelPage /> : <Navigate to="/login" /> },
+    { path: '/subscription', element: isAuthenticated ? <Subscription /> : <Navigate to="/login" /> },
     { path: '/video', element: isAuthenticated ? <Video /> : <Navigate to="/login" /> },
+    { path: '/search', element: isAuthenticated ? <Search /> : <Navigate to="/login" /> },
     { path: '*', element: <NotFound /> },
   ];
 
@@ -58,4 +75,6 @@ function App() {
   );
 }
 
+
 export default App;
+

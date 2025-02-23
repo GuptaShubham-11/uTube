@@ -17,6 +17,7 @@ export default function UploadVideo() {
 
   const handleChange = (e) => {
     const { name, value, files } = e.target;
+
     setFormData((prev) => ({
       ...prev,
       [name]: files ? files[0] : value,
@@ -25,8 +26,9 @@ export default function UploadVideo() {
 
   const handleUpload = async () => {
     const { title, description, videoFile, thumbnail } = formData;
+
     if (!title || !description || !videoFile || !thumbnail) {
-      setAlert({ type: 'warning', message: 'Please fill all fields and upload files.' });
+      setAlert({ type: 'warning', message: 'All fields and files are required!' });
       return;
     }
 
@@ -40,13 +42,13 @@ export default function UploadVideo() {
 
       if (response.statusCode < 400) {
         setAlert({ type: 'success', message: 'Video uploaded successfully!' });
-        setTimeout(() => navigate('/videos'), 3000);
+        setTimeout(() => navigate('/videos'), 2000);
       } else {
-        setAlert({ type: 'error', message: response.message || 'Video upload failed.' });
+        setAlert({ type: 'error', message: response.message || 'Upload failed.' });
       }
     } catch (error) {
       setLoading(false);
-      setAlert({ type: 'error', message: error.message || 'Video upload failed.' });
+      setAlert({ type: 'error', message: error.message || 'An error occurred.' });
     }
   };
 
@@ -54,28 +56,25 @@ export default function UploadVideo() {
     { label: 'Video Title', name: 'title', Icon: <Text /> },
     { label: 'Video Description', name: 'description', Icon: <Text />, textarea: true },
     { label: 'Upload Video', name: 'videoFile', Icon: <Video />, type: 'file', accept: 'video/*' },
-    {
-      label: 'Upload Thumbnail',
-      name: 'thumbnail',
-      Icon: <Image />,
-      type: 'file',
-      accept: 'image/*',
-    },
+    { label: 'Upload Thumbnail', name: 'thumbnail', Icon: <Image />, type: 'file', accept: 'image/*' },
   ];
 
   return (
-    <div className="max-w-3xl mx-auto my-24 p-6 rounded-xl shadow-lg border border-secondary-light dark:border-secondary-dark text-text-light dark:text-text-dark">
+    <div className="max-w-3xl mx-auto my-24 p-6 rounded-xl shadow-lg border border-gray-300 dark:border-gray-700 text-gray-800 dark:text-gray-200">
       {alert && (
-        <div className="fixed top-25 right-4 z-50">
+        <div className="fixed top-20 right-4 z-50">
           <Alert type={alert.type} message={alert.message} onClose={() => setAlert(null)} />
         </div>
       )}
-      <h1 className="text-4xl font-bold text-center mb-6">Upload Video</h1>
+
+      <h1 className="text-3xl font-semibold text-center mb-6">Upload Video</h1>
+
       {inputFields.map(({ label, name, Icon, textarea, type, accept }, idx) => (
-        <div key={idx} className="mb-4">
+        <div key={idx} className="mb-5">
           <div className="flex items-center gap-2 mb-2">
             <span className="text-sm font-medium">{label}</span>
           </div>
+
           {textarea ? (
             <Input
               as="textarea"
@@ -87,7 +86,14 @@ export default function UploadVideo() {
               rows="4"
             />
           ) : type === 'file' ? (
-            <Input type="file" name={name} icon={Icon} accept={accept} onChange={handleChange} />
+            <>
+              <Input type="file" name={name} icon={Icon} accept={accept} onChange={handleChange} />
+              {formData[name] && (
+                <p className="text-sm text-gray-600 dark:text-gray-400 mt-2">
+                  Selected: {formData[name]?.name}
+                </p>
+              )}
+            </>
           ) : (
             <Input
               type="text"
@@ -106,7 +112,7 @@ export default function UploadVideo() {
         onClick={handleUpload}
         variant="primary"
         disabled={loading}
-        className="w-full mt-4 flex items-center justify-center gap-2"
+        className="w-full mt-4 py-3 flex items-center justify-center gap-2"
       />
     </div>
   );
