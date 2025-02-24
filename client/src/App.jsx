@@ -39,10 +39,10 @@ function App() {
   const getCurrentUser = async () => {
     const response = await userApi.getCurrentUser();
 
-    if (response?.message === "Unauthorized request") {
+    if (response?.message === 'Unauthorized request') {
       dispatch(logout());
     }
-  }
+  };
   const routes = [
     { path: '/', element: isAuthenticated ? <Videos /> : <Home /> },
     { path: '/signup', element: isAuthenticated ? <Navigate to="/" /> : <Signup /> },
