@@ -13,7 +13,7 @@ import {
   Home,
   Signup,
   Login,
-  Search
+  Search,
 } from './pages';
 import { userApi } from './api/user.js';
 
@@ -26,10 +26,9 @@ function App() {
     const root = document.documentElement;
     root.classList.remove('light', 'dark');
     root.classList.add(theme);
+    getCurrentUser();
 
     const user = JSON.parse(localStorage.getItem('user'));
-    // refreshAccessToken(user?.refreshToken);
-
     const accessToken = localStorage.getItem('accessToken');
 
     if (accessToken && user) {
@@ -37,18 +36,13 @@ function App() {
     }
   }, [theme, dispatch]);
 
-  // const refreshAccessToken = async (token) => {
-  //   try {
-  //     const response = await userApi.refreshAccessToken(token);
-  //     if (response.success == false) {
-  //       dispatch(logout());
-  //     }
+  const getCurrentUser = async () => {
+    const response = await userApi.getCurrentUser();
 
-  //   } catch (error) {
-  //     console.log(error);
-  //   }
-  // }
-
+    if (response?.message === "Unauthorized request") {
+      dispatch(logout());
+    }
+  }
   const routes = [
     { path: '/', element: isAuthenticated ? <Videos /> : <Home /> },
     { path: '/signup', element: isAuthenticated ? <Navigate to="/" /> : <Signup /> },
@@ -56,7 +50,10 @@ function App() {
     { path: '/videos', element: isAuthenticated ? <Videos /> : <Navigate to="/login" /> },
     { path: '/upload', element: isAuthenticated ? <UploadVideo /> : <Navigate to="/login" /> },
     { path: '/channel/:id', element: isAuthenticated ? <ChannelPage /> : <Navigate to="/login" /> },
-    { path: '/subscription', element: isAuthenticated ? <Subscription /> : <Navigate to="/login" /> },
+    {
+      path: '/subscription',
+      element: isAuthenticated ? <Subscription /> : <Navigate to="/login" />,
+    },
     { path: '/video', element: isAuthenticated ? <Video /> : <Navigate to="/login" /> },
     { path: '/search', element: isAuthenticated ? <Search /> : <Navigate to="/login" /> },
     { path: '*', element: <NotFound /> },
@@ -75,6 +72,4 @@ function App() {
   );
 }
 
-
 export default App;
-
