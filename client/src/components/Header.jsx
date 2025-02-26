@@ -1,13 +1,11 @@
-import { useState } from "react";
-import { Search, TvMinimalPlay, Menu, X } from "lucide-react";
-import { ThemeToggle, ProfileDropdown, Button } from "../components";
-import { useSelector } from "react-redux";
-import { Link, useNavigate } from "react-router-dom";
+import { Search, TvMinimalPlay, Menu, X } from 'lucide-react';
+import { ThemeToggle, ProfileDropdown, Button } from '../components';
+import { useSelector } from 'react-redux';
+import { Link, useNavigate } from 'react-router-dom';
 
 export default function Header() {
   const isAuthenticated = useSelector((state) => state.auth.isAuthenticated);
   const navigate = useNavigate();
-  const [mobileMenuOpen, setMobileMenuOpen] = useState(false);
 
   return (
     <header className="fixed top-0 left-0 w-full z-50 bg-background-light dark:bg-background-dark shadow-md border-b border-secondary-light dark:border-secondary-dark transition duration-300">
@@ -15,26 +13,29 @@ export default function Header() {
         {/* Left: Logo */}
         <div className="flex items-center gap-2">
           <TvMinimalPlay size={30} className="text-primary-light dark:text-primary-dark" />
-          <Link to="/" className="text-primary-light dark:text-primary-dark font-bold text-2xl outline-none">
+          <Link
+            to="/"
+            className="text-primary-light dark:text-primary-dark font-bold text-2xl outline-none"
+            aria-label="Go to homepage"
+          >
             uTube
           </Link>
         </div>
 
-        {/* Desktop Navigation */}
         <div className="flex items-center gap-4">
           {isAuthenticated && (
             <Button
-              text={<Search size={20} />}
+              text={<Search size={20} aria-hidden="true" />}
               onClick={() => navigate(`/search`)}
               variant="secondary"
-              className="p-2 border-2 rounded-full hover:bg-gray-200 dark:hover:bg-gray-700 transition"
+              className="px-2 border-2 hover:bg-gray-200 dark:hover:bg-gray-700 transition focus:ring-2 focus:ring-primary-light dark:focus:ring-primary-dark"
+              aria-label="Search"
             />
           )}
           {isAuthenticated && <ProfileDropdown />}
           <ThemeToggle />
         </div>
       </div>
-
     </header>
   );
 }
