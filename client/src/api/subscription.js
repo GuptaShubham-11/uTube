@@ -1,6 +1,7 @@
 import axios from 'axios';
 
 const apiClient = axios.create({
+  baseURL: `/api/v1/subscriptions`,
   headers: {
     'Content-Type': 'application/json',
   },
@@ -22,7 +23,7 @@ const dataa = apiClient.interceptors.request.use(
 
 const toggleSubscribeButton = async (id) => {
   try {
-    const response = await apiClient.post(`/api/v1/subscriptions/c/${id}`);
+    const response = await apiClient.post(`/c/${id}`);
     return response.data;
   } catch (error) {
     return error.response.data;
@@ -31,7 +32,7 @@ const toggleSubscribeButton = async (id) => {
 
 const getSubscribedChannels = async (id) => {
   try {
-    const response = await apiClient.get(`/api/v1/subscriptions/c/${id}`);
+    const response = await apiClient.get(`/c/${id}`);
     return response.data;
   } catch (error) {
     return error.response.data;
@@ -40,7 +41,7 @@ const getSubscribedChannels = async (id) => {
 
 const getChannelsSubscriber = async (id) => {
   try {
-    const response = await apiClient.get(`/api/v1/subscriptions/u/${id}`);
+    const response = await apiClient.get(`/u/${id}`);
     return response.data;
   } catch (error) {
     return error.response.data;

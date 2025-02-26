@@ -1,6 +1,7 @@
 import axios from 'axios';
 
 const apiClient = axios.create({
+  baseURL: `/api/v1/users`,
   headers: {
     'Content-Type': 'application/json',
   },
@@ -8,11 +9,13 @@ const apiClient = axios.create({
 
 const signUp = async (data) => {
   try {
-    const response = await apiClient.post('/api/v1/users/register', data, {
+    const response = await apiClient.post('/register', data, {
       headers: {
         'Content-Type': 'multipart/form-data',
       },
     });
+    console.log(response);
+
     return response.data;
   } catch (error) {
     return error.response.data;
@@ -21,7 +24,7 @@ const signUp = async (data) => {
 
 const login = async (data) => {
   try {
-    const response = await apiClient.post('/api/v1/users/login', data);
+    const response = await apiClient.post('/login', data);
     return response.data;
   } catch (error) {
     return error.response.data;
@@ -30,7 +33,7 @@ const login = async (data) => {
 
 const logout = async () => {
   try {
-    const response = await apiClient.post('/api/v1/users/logout');
+    const response = await apiClient.post('/logout');
     return response.data;
   } catch (error) {
     return error.response.data;
@@ -39,7 +42,7 @@ const logout = async () => {
 
 const refreshAccessToken = async (token) => {
   try {
-    const response = await apiClient.post('/api/v1/users/refresh-token', token);
+    const response = await apiClient.post('/refresh-token', token);
     return response.data;
   } catch (error) {
     return error.response.data;
@@ -49,7 +52,7 @@ const refreshAccessToken = async (token) => {
 const updateFullname = async (data) => {
   try {
     const token = localStorage.getItem('accessToken');
-    const response = await apiClient.patch('/api/v1/users/update-user-details', data, {
+    const response = await apiClient.patch('/update-user-details', data, {
       headers: {
         Authorization: `Bearer ${token}`,
       },
@@ -63,7 +66,7 @@ const updateFullname = async (data) => {
 const updateAvatar = async (data) => {
   try {
     const token = localStorage.getItem('accessToken');
-    const response = await apiClient.patch('/api/v1/users/update-user-avatar', data, {
+    const response = await apiClient.patch('/update-user-avatar', data, {
       headers: {
         'Content-Type': 'multipart/form-data',
         Authorization: `Bearer ${token}`,
@@ -78,7 +81,7 @@ const updateAvatar = async (data) => {
 const updateCoverImage = async (data) => {
   const token = localStorage.getItem('accessToken');
   try {
-    const response = await apiClient.patch('/api/v1/users/update-user-cover', data, {
+    const response = await apiClient.patch('/update-user-cover', data, {
       headers: {
         'Content-Type': 'multipart/form-data',
         Authorization: `Bearer ${token}`,
@@ -93,7 +96,7 @@ const updateCoverImage = async (data) => {
 const getUserChannelProfile = async (id) => {
   const token = localStorage.getItem('accessToken');
   try {
-    const response = await apiClient.get(`/api/v1/users/c/${id}`, {
+    const response = await apiClient.get(`/c/${id}`, {
       headers: {
         Authorization: `Bearer ${token}`,
       },
@@ -107,7 +110,7 @@ const getUserChannelProfile = async (id) => {
 const getWatchHistory = async () => {
   const token = localStorage.getItem('accessToken');
   try {
-    const response = await apiClient.get('/api/v1/users/history', {
+    const response = await apiClient.get('/history', {
       headers: {
         Authorization: `Bearer ${token}`,
       },
@@ -116,12 +119,12 @@ const getWatchHistory = async () => {
   } catch (error) {
     return error.response.data;
   }
-}
+};
 
 const updateWatchHistory = async (id) => {
   const token = localStorage.getItem('accessToken');
   try {
-    const response = await apiClient.post(`/api/v1/users/update-history/${id}`, {
+    const response = await apiClient.post(`/update-history/${id}`, {
       headers: {
         Authorization: `Bearer ${token}`,
       },
@@ -130,7 +133,16 @@ const updateWatchHistory = async (id) => {
   } catch (error) {
     return error.response.data;
   }
-}
+};
+
+const getCurrentUser = async () => {
+  try {
+    const response = await apiClient.get('/current-user');
+    return response.data;
+  } catch (error) {
+    return error.response.data;
+  }
+};
 
 export const userApi = {
   signUp,
@@ -142,5 +154,6 @@ export const userApi = {
   updateAvatar,
   updateCoverImage,
   getWatchHistory,
-  updateWatchHistory
+  updateWatchHistory,
+  getCurrentUser,
 };

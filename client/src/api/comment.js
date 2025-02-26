@@ -1,6 +1,7 @@
 import axios from 'axios';
 
 const apiClient = axios.create({
+  baseURL: `/api/v1/comments`,
   headers: {
     'Content-Type': 'application/json',
   },
@@ -20,9 +21,9 @@ apiClient.interceptors.request.use(
   }
 );
 
-const addComment = async (videoId, content) => {
+const addComment = async (videoId, userId, content) => {
   try {
-    const response = await apiClient.post(`/api/v1/comments/${videoId}`, { content });
+    const response = await apiClient.post(`/${videoId}/${userId}`, { content });
     return response.data;
   } catch (error) {
     return error.response.data;
@@ -31,7 +32,7 @@ const addComment = async (videoId, content) => {
 
 const updateComment = async (commentId, content) => {
   try {
-    const response = await apiClient.patch(`/api/v1/comments/c/${commentId}`, { content });
+    const response = await apiClient.patch(`/c/${commentId}`, { content });
     return response.data;
   } catch (error) {
     return error.response.data;
@@ -40,7 +41,7 @@ const updateComment = async (commentId, content) => {
 
 const deleteComment = async (commentId) => {
   try {
-    const response = await apiClient.delete(`/api/v1/comments/c/${commentId}`);
+    const response = await apiClient.delete(`/c/${commentId}`);
     return response.data;
   } catch (error) {
     return error.response.data;
@@ -49,7 +50,8 @@ const deleteComment = async (commentId) => {
 
 const getAllVideoComments = async (videoId) => {
   try {
-    const response = await apiClient.get(`/api/v1/comments/${videoId}`);
+    const response = await apiClient.get(`/${videoId}`);
+
     return response.data;
   } catch (error) {
     return error.response.data;

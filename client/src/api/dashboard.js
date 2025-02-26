@@ -1,6 +1,7 @@
 import axios from 'axios';
 
 const apiClient = axios.create({
+  baseURL: `/api/v1/dashboard`,
   headers: {
     'Content-Type': 'application/json',
   },
@@ -22,7 +23,7 @@ apiClient.interceptors.request.use(
 
 const getChannelVideos = async (channelId) => {
   try {
-    const response = await apiClient.get(`/api/v1/dashboard/videos/${channelId}`);
+    const response = await apiClient.get(`/videos/${channelId}`);
     return response.data;
   } catch (error) {
     return error.response.data;
