@@ -1,6 +1,7 @@
 import axios from 'axios';
 
 const apiClient = axios.create({
+  baseURL: `/api/v1/videos`,
   headers: {
     'Content-Type': 'application/json',
   },
@@ -22,7 +23,7 @@ apiClient.interceptors.request.use(
 
 const uploadVideo = async (data) => {
   try {
-    const response = await apiClient.post('/api/v1/videos', data, {
+    const response = await apiClient.post('/', data, {
       headers: {
         'Content-Type': 'multipart/form-data',
       },
@@ -36,7 +37,7 @@ const uploadVideo = async (data) => {
 
 const updateVideo = async (videoId, data) => {
   try {
-    const response = await apiClient.patch(`/api/v1/videos/${videoId}`, data, {
+    const response = await apiClient.patch(`/${videoId}`, data, {
       headers: {
         'Content-Type': 'multipart/form-data',
       },
@@ -49,7 +50,7 @@ const updateVideo = async (videoId, data) => {
 
 const deleteVideo = async (videoId) => {
   try {
-    const response = await apiClient.delete(`/api/v1/videos/${videoId}`);
+    const response = await apiClient.delete(`/${videoId}`);
     return response.data;
   } catch (error) {
     return error.response.data;
@@ -58,16 +59,23 @@ const deleteVideo = async (videoId) => {
 
 const getSuggestedVideos = async () => {
   try {
-    const response = await apiClient.get('/api/v1/videos/suggested-videos');
+    const response = await apiClient.get('/suggested-videos');
     return response.data;
   } catch (error) {
     return error.response.data;
   }
 };
 
-const getAllVideos = async ({ page = 1, limit = 10, query = "", sortBy = "createdAt", sortType = "desc", userId = "" }) => {
+const getAllVideos = async ({
+  page = 1,
+  limit = 10,
+  query = '',
+  sortBy = 'createdAt',
+  sortType = 'desc',
+  userId = '',
+}) => {
   try {
-    const response = await apiClient.get("/api/v1/videos", {
+    const response = await apiClient.get('', {
       params: { page, limit, query, sortBy, sortType, userId },
     });
     return response.data;
@@ -78,13 +86,12 @@ const getAllVideos = async ({ page = 1, limit = 10, query = "", sortBy = "create
 
 const updateVideoViews = async (videoId) => {
   try {
-    const response = await apiClient.patch(`/api/v1/videos/${videoId}`);
+    const response = await apiClient.patch(`/${videoId}`);
     return response.data;
   } catch (error) {
     return error.response.data;
   }
 };
-
 
 export const videoApi = {
   uploadVideo,
@@ -92,5 +99,5 @@ export const videoApi = {
   deleteVideo,
   getSuggestedVideos,
   getAllVideos,
-  updateVideoViews
+  updateVideoViews,
 };
