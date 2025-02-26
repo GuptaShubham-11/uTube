@@ -110,7 +110,7 @@ export default function ChannelPage() {
   return (
     <div className="mt-16 min-h-screen px-4 sm:px-8">
       {alert && (
-        <div className="fixed top-5 right-5 z-50">
+        <div className="fixed top-10 right-5 z-50">
           <Alert type={alert.type} message={alert.message} onClose={() => setAlert(null)} />
         </div>
       )}{' '}

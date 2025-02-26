@@ -21,7 +21,10 @@ export default function Subscribed() {
         if (response.statusCode < 400) {
           setSubscribedChannels(response.message);
         } else {
-          setAlert({ type: 'error', message: response.message || 'Failed to fetch subscribed channels.' });
+          setAlert({
+            type: 'error',
+            message: response.message || 'Failed to fetch subscribed channels.',
+          });
         }
       } catch (error) {
         setAlert({ type: 'error', message: 'Failed to fetch subscribed channels.' });
@@ -53,7 +56,7 @@ export default function Subscribed() {
 
       {/* Alert Component */}
       {alert && (
-        <div className="fixed top-5 right-5 z-50">
+        <div className="fixed top-10 right-5 z-50">
           <Alert type={alert.type} message={alert.message} onClose={() => setAlert(null)} />
         </div>
       )}

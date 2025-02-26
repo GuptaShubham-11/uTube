@@ -66,7 +66,7 @@ export default function Signup() {
     <div className="flex justify-center items-center min-h-screen px-4">
       {/* Alert Notification */}
       {alert && (
-        <div className="fixed top-5 right-5 z-50">
+        <div className="fixed top-10 right-5 z-50">
           <Alert type={alert.type} message={alert.message} onClose={() => setAlert(null)} />
         </div>
       )}

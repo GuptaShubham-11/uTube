@@ -43,7 +43,7 @@ export default function Videos() {
   return (
     <section className="p-4 max-w-6xl mx-auto mt-16">
       {alert && (
-        <div className="fixed top-5 right-5 z-50">
+        <div className="fixed top-10 right-5 z-50">
           <Alert type={alert.type} message={alert.message} onClose={() => setAlert(null)} />
         </div>
       )}

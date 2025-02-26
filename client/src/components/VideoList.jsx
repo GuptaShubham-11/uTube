@@ -81,7 +81,7 @@ const VideoList = ({ channelId }) => {
   return (
     <div className="p-4">
       {alert && (
-        <div className="fixed top-5 right-5 z-50">
+        <div className="fixed top-10 right-5 z-50">
           <Alert type={alert.type} message={alert.message} onClose={() => setAlert(null)} />
         </div>
       )}{' '}
