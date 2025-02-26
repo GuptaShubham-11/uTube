@@ -19,5 +19,5 @@ export {
   Video,
   Signup,
   Login,
-  Search
+  Search,
 };

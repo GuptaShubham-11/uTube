@@ -1,7 +1,7 @@
-import { useEffect, useState } from "react";
-import { History } from "lucide-react";
-import { userApi } from "../api/user.js";
-import { Spinner } from ".";
+import { useEffect, useState } from 'react';
+import { History, RefreshCw } from 'lucide-react';
+import { userApi } from '../api/user.js';
+import { Spinner, Button } from '.';
 
 const WatchHistory = () => {
   const [history, setHistory] = useState([]);
@@ -10,13 +10,14 @@ const WatchHistory = () => {
 
   const fetchHistory = async () => {
     setLoading(true);
+    setError(null);
     try {
-      const response = await userApi.getWatchHistory("/api/v1/users/history");
+      const response = await userApi.getWatchHistory('/api/v1/users/history');
 
       if (response.statusCode < 400) {
-        setHistory(response?.message);
+        setHistory(response?.message || []);
       } else {
-        throw new Error("Failed to fetch watch history.");
+        throw new Error('Failed to fetch watch history.');
       }
     } catch (err) {
       setError(err.message);
@@ -35,32 +36,46 @@ const WatchHistory = () => {
         <History size={32} /> Watch History
       </h2>
 
-      {loading && <Spinner />}
+      {loading && (
+        <div className="flex justify-center">
+          <Spinner />
+        </div>
+      )}
 
-      {error && <p className="text-red-600">{error}</p>}
+      {error && (
+        <div className="text-center">
+          <p className="text-red-600">{error}</p>
+          <Button variant="outline" onClick={fetchHistory} className="mt-3 flex items-center gap-2">
+            <RefreshCw size={18} /> Retry
+          </Button>
+        </div>
+      )}
 
       {!loading && history.length === 0 && (
-        <p className="text-gray-500">No watch history available.</p>
+        <p className="text-gray-500 text-center">No watch history available.</p>
       )}
 
       <div className="grid grid-cols-1 sm:grid-cols-2 md:grid-cols-3 gap-4">
         {history.map((item) => (
-          <div
-            key={item?._id || item?.videoId}
-            className="bg-gray-100 dark:bg-gray-700 p-3 rounded-lg shadow-md"
-          >
-            <img
-              src={item?.thumbnail || "/default-thumbnail.jpg"}
-              alt={item?.title || "No Title"}
-              className="w-full h-40 object-cover rounded"
-              loading="lazy"
-            />
-            <h3 className="mt-2 font-semibold text-lg text-gray-900 dark:text-white">
-              {item?.title || "Untitled Video"}
-            </h3>
-          </div>
+          <VideoCard key={item?._id || item?.videoId} video={item} />
         ))}
       </div>
+    </div>
+  );
+};
+
+const VideoCard = ({ video }) => {
+  return (
+    <div className="bg-gray-100 dark:bg-gray-700 p-3 rounded-lg shadow-md transition-transform hover:scale-105">
+      <img
+        src={video?.thumbnail || '/default-thumbnail.jpg'}
+        alt={video?.title || 'No Title'}
+        className="w-full h-40 object-cover rounded"
+        loading="lazy"
+      />
+      <h3 className="mt-2 font-semibold text-lg text-gray-900 dark:text-white truncate">
+        {video?.title || 'Untitled Video'}
+      </h3>
     </div>
   );
 };

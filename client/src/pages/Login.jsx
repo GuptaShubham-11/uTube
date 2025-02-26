@@ -6,7 +6,6 @@ import { userApi } from '../api/user.js';
 import { useDispatch } from 'react-redux';
 import { login } from '../features/authSlice.js';
 
-
 export default function Login() {
   const [formData, setFormData] = useState({ email: '', password: '' });
   const [showPassword, setShowPassword] = useState(false);
@@ -15,28 +14,29 @@ export default function Login() {
   const navigate = useNavigate();
   const dispatch = useDispatch();
 
-  const handleChange = (e) => setFormData({ ...formData, [e.target.name]: e.target.value });
+  const handleChange = (e) => {
+    setFormData((prev) => ({ ...prev, [e.target.name]: e.target.value }));
+  };
 
   const handleSubmit = async (e) => {
     e.preventDefault();
-    if (!formData.email || !formData.password) {
+    const { email, password } = formData;
+
+    if (!email || !password) {
       setAlert({ type: 'warning', message: 'Email and password are required!' });
       return;
     }
-    if (formData.password.length < 6) {
+
+    if (password.length < 6) {
       setAlert({ type: 'info', message: 'Password must be at least 6 characters long.' });
       return;
     }
 
     setLoading(true);
-
     try {
       const response = await userApi.login(formData);
-      setLoading(false);
-
       if (response.statusCode < 400) {
         setAlert({ type: 'success', message: 'Login successful!' });
-
         setTimeout(() => {
           dispatch(
             login({
@@ -45,7 +45,6 @@ export default function Login() {
               refreshToken: response.message.refreshToken,
             })
           );
-
           localStorage.setItem('user', JSON.stringify(response.message.user));
           navigate('/videos');
         }, 2000);
@@ -53,9 +52,9 @@ export default function Login() {
         setAlert({ type: 'error', message: response.message || 'Login failed.' });
       }
     } catch (error) {
-      setLoading(false);
       setAlert({ type: 'error', message: error.message || 'Login failed.' });
     }
+    setLoading(false);
   };
 
   return (
