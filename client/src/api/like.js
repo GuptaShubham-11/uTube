@@ -1,7 +1,7 @@
 import axios from 'axios';
 
 const apiClient = axios.create({
-  baseURL: `/api/v1/likes`,
+  baseURL: `${import.meta.env.BASE_URL}/likes`,
   headers: {
     'Content-Type': 'application/json',
   },

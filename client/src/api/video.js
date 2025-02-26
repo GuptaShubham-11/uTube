@@ -1,7 +1,7 @@
 import axios from 'axios';
 
 const apiClient = axios.create({
-  baseURL: `/api/v1/videos`,
+  baseURL: `${import.meta.env.BASE_URL}/videos`,
   headers: {
     'Content-Type': 'application/json',
   },

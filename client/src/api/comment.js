@@ -1,7 +1,7 @@
 import axios from 'axios';
 
 const apiClient = axios.create({
-  baseURL: `/api/v1/comments`,
+  baseURL: `${import.meta.env.BASE_URL}/comments`,
   headers: {
     'Content-Type': 'application/json',
   },
