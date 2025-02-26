@@ -39,7 +39,7 @@ function App() {
   const getCurrentUser = async () => {
     const response = await userApi.getCurrentUser();
 
-    if (response?.message === 'Unauthorized request') {
+    if (response?.message === 'jwt expired') {
       dispatch(logout());
     }
   };
