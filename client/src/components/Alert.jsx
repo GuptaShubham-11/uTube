@@ -37,7 +37,7 @@ export default function Alert({ type = 'info', message, onClose, duration = 3000
         <div className="flex items-center justify-between gap-3 w-full">
           <div className="flex items-center gap-3">
             <Icon className={`text-${color}`} size={24} />
-            <span className="text-gray-800 dark:text-gray-200 font-medium">{message}</span>
+            <span className="text-gray-800 font-medium">{message}</span>
           </div>
           <button
             onClick={onClose}
