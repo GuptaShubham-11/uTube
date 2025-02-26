@@ -3,6 +3,7 @@ import { deleteOnCloudinary, uploadOnCloudinary } from "../utils/cloudinary.js";
 import { asyncHandler } from "../utils/asyncHandler.js";
 import { Video } from "../models/video.model.js";
 import { ApiResponse } from "../utils/ApiResponse.js";
+import mongoose from "mongoose";
 
 const getAllVideos = asyncHandler(async (req, res) => {
   const {
@@ -11,33 +12,27 @@ const getAllVideos = asyncHandler(async (req, res) => {
     query,
     sortBy = "createdAt",
     sortType = "desc",
-    userId,
   } = req.query;
+  const userId = req.user?._id;
 
   const videos = await Video.aggregate([
     {
-      // Filter videos
       $match: {
         ...(query ? { title: { $regex: query, $options: "i" } } : {}),
-        ...(userId ? { user: userId } : {}),
       },
     },
     {
-      // Sort videos
       $sort: {
         [sortBy]: sortType === "asc" ? 1 : -1,
       },
     },
     {
-      // Pagination
       $skip: (page - 1) * limit,
     },
     {
-      // Limit results
       $limit: Number(limit),
     },
     {
-      // Lookup to populate owner details
       $lookup: {
         from: "users",
         localField: "owner",
@@ -49,7 +44,29 @@ const getAllVideos = asyncHandler(async (req, res) => {
       $unwind: "$ownerDetails",
     },
     {
-      // Project specific fields
+      // ✅ Check if the logged-in user has liked the video
+      $lookup: {
+        from: "likes",
+        let: {
+          videoId: "$_id",
+          userId: userId ? new mongoose.Types.ObjectId(userId) : null,
+        },
+        pipeline: [
+          {
+            $match: {
+              $expr: {
+                $and: [
+                  { $eq: ["$video", "$$videoId"] },
+                  { $eq: ["$likedBy", "$$userId"] },
+                ],
+              },
+            },
+          },
+        ],
+        as: "userLike",
+      },
+    },
+    {
       $project: {
         title: 1,
         description: 1,
@@ -57,30 +74,24 @@ const getAllVideos = asyncHandler(async (req, res) => {
         thumbnail: 1,
         views: 1,
         createdAt: 1,
-        "ownerDetails": 1,
+        ownerDetails: 1,
+        isLiked: { $gt: [{ $size: "$userLike" }, 0] }, // ✅ true if the user has liked the video
       },
     },
   ]);
 
-
-  const totalVideos = await Video.aggregate([
-    {
-      $match: {
-        ...(query ? { title: { $regex: query, $options: "i" } } : {}),
-        ...(userId ? { user: userId } : {}),
-      },
-    },
-    {
-      $count: "total",
-    },
-  ]);
-
-  const total = totalVideos.length ? totalVideos[0].total : 0;
+  const totalVideos = await Video.countDocuments(
+    query ? { title: { $regex: query, $options: "i" } } : {},
+  );
 
   return res
     .status(200)
     .json(
-      new ApiResponse(200, { videos, total }, "Videos retrieved successfully."),
+      new ApiResponse(
+        200,
+        { videos, total: totalVideos },
+        "Videos retrieved successfully.",
+      ),
     );
 });
 
@@ -173,7 +184,6 @@ const updateVideo = asyncHandler(async (req, res) => {
     thumbnail = await uploadOnCloudinary(newThumbnailPath, "image");
   }
 
-
   const updateVideo = await Video.findByIdAndUpdate(
     videoId,
     {
@@ -252,8 +262,6 @@ const togglePublishStatus = asyncHandler(async (req, res) => {
 
 const updateVideoViews = asyncHandler(async (req, res) => {
   const { videoId } = req.params;
-  console.log(videoId);
-
 
   // Validate videoId
   if (!videoId) {
@@ -276,7 +284,9 @@ const updateVideoViews = asyncHandler(async (req, res) => {
   // Return the updated video
   return res
     .status(200)
-    .json(new ApiResponse(200, updatedVideo, "Video views updated successfully."));
+    .json(
+      new ApiResponse(200, updatedVideo, "Video views updated successfully."),
+    );
 });
 
 const getSuggestedVideos = asyncHandler(async (req, res) => {
@@ -336,5 +346,5 @@ export {
   deleteVideo,
   togglePublishStatus,
   getSuggestedVideos,
-  updateVideoViews
+  updateVideoViews,
 };

@@ -38,13 +38,15 @@ const registerUser = asyncHandler(async (req, res) => {
     throw new ApiError(409, "User with this email already exists.");
 
   const avatarLocalPath = req.files?.avatar?.[0]?.path;
+  console.log(avatarLocalPath);
+
   const coverImageLocalPath = req.files?.coverImage?.[0]?.path;
 
   if (!avatarLocalPath) throw new ApiError(400, "Avatar is required.");
 
-  const avatar = await uploadOnCloudinary(avatarLocalPath);
+  const avatar = await uploadOnCloudinary(avatarLocalPath, "image");
   const coverImage = coverImageLocalPath
-    ? await uploadOnCloudinary(coverImageLocalPath)
+    ? await uploadOnCloudinary(coverImageLocalPath, "image")
     : null;
 
   const user = await User.create({
@@ -218,6 +220,8 @@ const updateUserAvatar = asyncHandler(async (req, res) => {
 // Update user cover image
 const updateUserCoverImage = asyncHandler(async (req, res) => {
   const coverImageLocalPath = req.file?.path;
+  console.log(coverImageLocalPath);
+
   const oldCoverImagePath = req.user?.coverImage;
 
   if (!coverImageLocalPath)
@@ -335,8 +339,6 @@ const updateWatchHistory = async (req, res) => {
     const userId = req.user._id;
     const { videoId } = req.params;
 
-    console.log(videoId);
-
     const HISTORY_LIMIT = 30;
 
     // Check if the video exists
@@ -352,7 +354,9 @@ const updateWatchHistory = async (req, res) => {
     }
 
     // Remove video if it already exists in history
-    user.watchHistory = user.watchHistory.filter((id) => id.toString() !== videoId);
+    user.watchHistory = user.watchHistory.filter(
+      (id) => id.toString() !== videoId,
+    );
 
     // Add new video to the start (most recent)
     user.watchHistory.unshift(videoId);
@@ -364,14 +368,26 @@ const updateWatchHistory = async (req, res) => {
 
     await user.save();
 
-    res.status(200).json(
-      new ApiResponse(200, { watchHistory: user.watchHistory }, "Watch history updated successfully."),
-    );
+    res
+      .status(200)
+      .json(
+        new ApiResponse(
+          200,
+          { watchHistory: user.watchHistory },
+          "Watch history updated successfully.",
+        ),
+      );
   } catch (error) {
-    res.status(500).json(new ApiError(500, error.message || "Server error updating watch history."));
+    res
+      .status(500)
+      .json(
+        new ApiError(
+          500,
+          error.message || "Server error updating watch history.",
+        ),
+      );
   }
 };
-
 
 export {
   registerUser,
@@ -385,5 +401,5 @@ export {
   updateUserCoverImage,
   getUserChannelProfile,
   getWatchHistory,
-  updateWatchHistory
+  updateWatchHistory,
 };

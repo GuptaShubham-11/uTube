@@ -68,6 +68,7 @@ const getChannelStats = asyncHandler(async (req, res) => {
 
 const getChannelVideos = asyncHandler(async (req, res) => {
   const { channelId } = req.params;
+  const userId = req.user?._id;
 
   if (!channelId) {
     throw new ApiError(400, "Channel Id is required");
@@ -85,15 +86,50 @@ const getChannelVideos = asyncHandler(async (req, res) => {
       },
     },
     {
+      $lookup: {
+        from: "users",
+        localField: "owner",
+        foreignField: "_id",
+        as: "ownerDetails",
+      },
+    },
+    {
+      $unwind: "$ownerDetails",
+    },
+    {
+      // ✅ Check if the logged-in user has liked the video
+      $lookup: {
+        from: "likes",
+        let: {
+          videoId: "$_id",
+          userId: userId ? new mongoose.Types.ObjectId(userId) : null,
+        },
+        pipeline: [
+          {
+            $match: {
+              $expr: {
+                $and: [
+                  { $eq: ["$video", "$$videoId"] },
+                  { $eq: ["$likedBy", "$$userId"] },
+                ],
+              },
+            },
+          },
+        ],
+        as: "userLike",
+      },
+    },
+    {
       $project: {
         _id: 1,
         title: 1,
         description: 1,
         views: 1,
-        likes: 1,
         createdAt: 1,
         videoFile: 1,
         thumbnail: 1,
+        ownerDetails: 1,
+        isLiked: { $gt: [{ $size: "$userLike" }, 0] },
       },
     },
   ]);

@@ -61,7 +61,7 @@ const deleteOnCloudinary = async (filePath, resourceType = "auto") => {
     });
     return response;
   } catch (error) {
-    console.error("Deletion failed:", error);
+    // console.error("Deletion failed:", error);
     return null;
   }
 };

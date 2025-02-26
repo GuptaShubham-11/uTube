@@ -10,8 +10,6 @@ const createPlaylist = asyncHandler(async (req, res) => {
   const { name, description } = req.body;
   const { userId } = req.params;
 
-  console.log(name, description, userId);
-
   if (!name || name.trim() === "") {
     throw new ApiError(400, "Name is required!");
   }
