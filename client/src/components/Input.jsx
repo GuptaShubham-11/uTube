@@ -7,8 +7,8 @@ export default function Input({
   icon,
   onChange,
   accept = '', // Accept attribute for file input (images, videos)
-  value = '', // To handle the value of the input
-  className,
+  value = '', // Controlled input value
+  className = '', // Allow additional class names
 }) {
   const [preview, setPreview] = useState(null);
 
@@ -18,8 +18,10 @@ export default function Input({
       // Show file preview for image/video
       const fileUrl = URL.createObjectURL(file);
       setPreview(fileUrl);
+    } else {
+      setPreview(null);
     }
-    onChange(e); // Trigger parent onChange (for file)
+    if (onChange) onChange(e); // Trigger parent onChange (for file)
   };
 
   return (
@@ -29,34 +31,34 @@ export default function Input({
       )}
 
       {type === 'file' ? (
-        // File input for image/video
         <>
           <input
             type="file"
             name={name}
             accept={accept}
             onChange={handleFileChange}
-            className={`${className} w-full pl-10 pr-4 py-3 outline-none border rounded-lg focus:ring-2 focus:ring-primary text-black dark:text-white`}
+            className={`w-full pl-10 pr-4 py-3 outline-none border rounded-lg focus:ring-2 focus:ring-primary text-black dark:text-white ${className}`}
           />
           {preview && (
             <div className="mt-2">
               {accept.includes('image') ? (
                 <img src={preview} alt="preview" className="w-full h-32 object-cover rounded-lg" />
-              ) : (
+              ) : accept.includes('video') ? (
                 <video src={preview} controls className="w-full h-32 rounded-lg" />
+              ) : (
+                <p className="text-gray-500 dark:text-gray-300">Preview not available</p>
               )}
             </div>
           )}
         </>
       ) : (
-        // Regular input (text, email, password)
         <input
           type={type}
           name={name}
           placeholder={placeholder}
           value={value}
-          onChange={(e) => onChange(e)}
-          className={`${className} w-full pl-10 pr-4 py-3 outline-none border rounded-lg focus:ring-2 focus:ring-primary text-gray-800 dark:text-white`}
+          onChange={onChange}
+          className={`w-full pl-10 pr-4 py-3 outline-none border rounded-lg focus:ring-2 focus:ring-primary text-gray-800 dark:text-white ${className}`}
         />
       )}
     </div>

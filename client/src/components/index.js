@@ -39,5 +39,5 @@ export {
   Button,
   Input,
   Subscribed,
-  Subscriber
+  Subscriber,
 };

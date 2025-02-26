@@ -1,60 +1,85 @@
-import React, { useEffect, useState } from 'react';
-import { Video, CircleFadingPlus, Trash2, XCircle } from 'lucide-react';
+import React, { useEffect, useState, useCallback } from 'react';
+import { Video, Trash2, XCircle, PlusSquare } from 'lucide-react';
 import { useSelector, useDispatch } from 'react-redux';
 import { useNavigate } from 'react-router-dom';
 import { setVideo } from '../features/videoSlice.js';
 import { playlistApi } from '../api/playlist.js';
+import { Button, Alert } from '../components';
 
 const SinglePlaylist = ({ playlist, channelId, onClose }) => {
   const [videos, setVideos] = useState([]);
   const [showPopup, setShowPopup] = useState(false);
   const [selectedVideos, setSelectedVideos] = useState([]);
+  const [alert, setAlert] = useState(null);
   const dispatch = useDispatch();
   const navigate = useNavigate();
   const availableVideos = useSelector((state) => state.video.allVideos);
   const user = useSelector((state) => state.auth.user);
-
   const isOwner = user._id === channelId;
 
-  const fetchPlaylist = async () => {
+  const fetchPlaylist = useCallback(async () => {
     try {
       const response = await playlistApi.getPlaylistById(playlist._id);
       if (response.statusCode < 400) {
-        setVideos(response.message?.videos);
+        setVideos(response.message?.videos || []);
       }
     } catch (error) {
-      console.error('Error fetching playlist:', error);
+      setAlert({ message: 'Failed to load playlist videos.', type: 'error' });
     }
-  };
+  }, [playlist._id]);
 
   useEffect(() => {
     fetchPlaylist();
-  }, [playlist, videos]);
+  }, [fetchPlaylist]);
 
   const handleAddVideo = () => {
-    const newVideos = availableVideos.filter((video) => selectedVideos.includes(video._id));
-    newVideos.forEach(async (video) => {
-      await playlistApi.addVideoToPlaylist(playlist._id, video._id);
-    });
-    setShowPopup(false);
-    setSelectedVideos([]);
+    if (selectedVideos.length === 0) {
+      setAlert({ message: 'No videos selected!', type: 'warning' });
+      return;
+    }
+    try {
+      selectedVideos.forEach(async (videoId) => {
+        await playlistApi.addVideoToPlaylist(playlist._id, videoId);
+        fetchPlaylist();
+      });
+      setAlert({ message: 'Videos added successfully!', type: 'success' });
+    } catch (error) {
+      setAlert({ message: 'Error adding videos.', type: 'error' });
+    } finally {
+      setShowPopup(false);
+      setSelectedVideos([]);
+    }
   };
 
   const toggleVideoSelection = (id) => {
-    setSelectedVideos((prev) =>
-      prev.includes(id) ? prev.filter((vid) => vid !== id) : [...prev, id]
-    );
+    setSelectedVideos((prev) => {
+      const newSelection = new Set(prev);
+      newSelection.has(id) ? newSelection.delete(id) : newSelection.add(id);
+      return Array.from(newSelection);
+    });
   };
 
   const handleDeleteVideo = async (id) => {
-    const response = await playlistApi.removeVideoFromPlaylist(playlist._id, id);
-    if (response.statusCode < 400) {
-      fetchPlaylist();
+    try {
+      const response = await playlistApi.removeVideoFromPlaylist(playlist._id, id);
+      if (response.statusCode < 400) {
+        fetchPlaylist();
+        setAlert({ message: 'Video removed successfully!', type: 'success' });
+      }
+    } catch (error) {
+      setAlert({ message: 'Error removing video.', type: 'error' });
+      console.error('Error deleting video:', error);
     }
   };
 
   return (
     <div className="p-6 relative">
+      {alert && (
+        <div className="fixed top-5 right-5 z-50">
+          <Alert type={alert.type} message={alert.message} onClose={() => setAlert(null)} />
+        </div>
+      )}
+
       {/* Header Section */}
       {isOwner && (
         <div className="mb-6 flex justify-between items-center border-b pb-4">
@@ -65,12 +90,12 @@ const SinglePlaylist = ({ playlist, channelId, onClose }) => {
             <p className="text-gray-500">{playlist.description}</p>
           </div>
           <div className="flex items-center gap-4">
-            <button
-              className="bg-blue-600 hover:bg-blue-700 text-white px-4 py-2 rounded-lg flex items-center gap-2"
+            <Button
+              text={<PlusSquare size={28} className="text-blue-500 hover:text-blue-700" />}
+              variant="primary"
               onClick={() => setShowPopup(true)}
-            >
-              <CircleFadingPlus size={20} /> Add Video
-            </button>
+              className="bg-transparent flex items-center gap-2"
+            />
             <button onClick={onClose} className="text-red-600 hover:text-red-800">
               <XCircle size={28} />
             </button>
@@ -80,31 +105,29 @@ const SinglePlaylist = ({ playlist, channelId, onClose }) => {
 
       {/* Video List Section */}
       <div className="grid grid-cols-1 sm:grid-cols-2 md:grid-cols-3 gap-6">
-        {videos.map((video) => (
+        {videos.map(({ _id, videoFile, title, description }) => (
           <div
-            key={video?._id}
+            key={_id}
             className="bg-white dark:bg-gray-700 shadow-lg rounded-lg p-4 relative hover:scale-105 transition-transform cursor-pointer"
             onClick={() => {
-              dispatch(setVideo({ video: video }));
+              dispatch(setVideo({ video: { _id, videoFile, title, description } }));
               navigate(`/video`);
             }}
           >
             <iframe
-              src={video?.videoFile}
-              title={video?.title}
+              src={videoFile}
+              title={title}
               className="w-full h-40 rounded mb-3"
               allowFullScreen
             ></iframe>
-            <h3 className="text-xl font-semibold mb-1 text-gray-900 dark:text-white">
-              {video?.title}
-            </h3>
-            <p className="text-sm text-gray-500 mb-4">{video?.description}</p>
+            <h3 className="text-xl font-semibold mb-1 text-gray-900 dark:text-white">{title}</h3>
+            <p className="text-sm text-gray-500 mb-4">{description}</p>
             {isOwner && (
               <button
                 className="bg-red-600 hover:bg-red-700 p-2 rounded absolute top-3 right-3"
                 onClick={(e) => {
                   e.stopPropagation();
-                  handleDeleteVideo(video._id);
+                  handleDeleteVideo(_id);
                 }}
               >
                 <Trash2 size={18} />
@@ -125,29 +148,26 @@ const SinglePlaylist = ({ playlist, channelId, onClose }) => {
               </button>
             </div>
             <div className="max-h-60 overflow-y-auto mb-4">
-              {availableVideos.map((video) => (
-                <div
-                  key={video._id}
-                  className="flex items-center gap-3 p-2 border-b hover:bg-gray-100 dark:hover:bg-gray-700 cursor-pointer"
-                  onClick={() => toggleVideoSelection(video._id)}
-                >
-                  <input
-                    type="checkbox"
-                    checked={selectedVideos.includes(video._id)}
-                    readOnly
-                    className="accent-blue-600"
-                  />
-                  <span className="text-lg text-gray-900 dark:text-white">{video.title}</span>
-                </div>
-              ))}
+              {availableVideos
+                .filter(({ _id }) => !videos.some((video) => video._id === _id)) // Filter instead of map
+                .map(({ _id, title }) => (
+                  <div key={_id} className="flex items-center mb-2">
+                    <input
+                      type="checkbox"
+                      checked={selectedVideos.includes(_id)}
+                      onChange={() => toggleVideoSelection(_id)}
+                    />
+                    <span className="ml-2">{title}</span>
+                  </div>
+                ))}
             </div>
-            <button
-              className="bg-green-600 hover:bg-green-700 text-white w-full py-2 rounded disabled:opacity-60"
+            <Button
+              text="Add Selected Videos"
               onClick={handleAddVideo}
-              disabled={selectedVideos.length === 0}
-            >
-              Add Selected Videos
-            </button>
+              variant="secondary"
+              className="w-full py-2"
+              isLoading={selectedVideos.length === 0}
+            />
           </div>
         </div>
       )}

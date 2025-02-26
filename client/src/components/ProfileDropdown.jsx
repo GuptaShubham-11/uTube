@@ -1,28 +1,67 @@
-import { useState } from 'react';
+import { useState, useRef, useEffect } from 'react';
 import { useNavigate } from 'react-router-dom';
 import { User, LogOut, Plus, UserRoundCheck, CircleUserRound, Home } from 'lucide-react';
 import { useDispatch, useSelector } from 'react-redux';
 import { logout } from '../features/authSlice';
 import { userApi } from '../api/user.js';
-import { Alert, Spinner } from '.';
+import { Alert, Spinner, Button } from '../components'; // Import Button
 
 export default function ProfileDropdown() {
   const [isOpen, setIsOpen] = useState(false);
   const [loading, setLoading] = useState(false);
   const [alert, setAlert] = useState(null);
+  const dropdownRef = useRef(null);
   const navigate = useNavigate();
   const dispatch = useDispatch();
   const user = useSelector((state) => state.auth.user);
 
+  // Close dropdown when clicking outside
+  useEffect(() => {
+    const handleClickOutside = (event) => {
+      if (dropdownRef.current && !dropdownRef.current.contains(event.target)) {
+        setIsOpen(false);
+      }
+    };
+    document.addEventListener('mousedown', handleClickOutside);
+    return () => document.removeEventListener('mousedown', handleClickOutside);
+  }, []);
+
+  // Close on 'Esc' key
+  useEffect(() => {
+    const handleKeyDown = (event) => {
+      if (event.key === 'Escape') setIsOpen(false);
+    };
+    document.addEventListener('keydown', handleKeyDown);
+    return () => document.removeEventListener('keydown', handleKeyDown);
+  }, []);
+
+  const handleLogout = async () => {
+    setLoading(true);
+    try {
+      const response = await userApi.logout();
+      if (response.statusCode < 400) {
+        dispatch(logout());
+        navigate('/login');
+        setAlert({ type: 'success', message: 'Logged out successfully!' });
+      } else {
+        setAlert({ type: 'error', message: 'Failed to logout.' });
+      }
+    } catch (error) {
+      setAlert({ type: 'error', message: error.message || 'Logout failed.' });
+    } finally {
+      setLoading(false);
+    }
+  };
+
   return (
-    <div className="relative">
+    <div className="relative" ref={dropdownRef}>
       {alert && (
         <div className="fixed top-4 right-4 z-50">
           <Alert type={alert.type} message={alert.message} onClose={() => setAlert(null)} />
         </div>
       )}
       <button
-        onClick={() => setIsOpen(!isOpen)}
+        onClick={() => setIsOpen((prev) => !prev)}
         className="w-10 h-10 rounded-full border-2 border-accent-light dark:border-accent-dark 
                 flex items-center justify-center bg-gray-200 dark:bg-gray-700 transition duration-300 cursor-pointer"
       >
@@ -31,56 +70,21 @@ export default function ProfileDropdown() {
 
       {isOpen && (
         <div className="absolute right-0 mt-2 w-48 bg-white dark:bg-gray-800 shadow-lg rounded-lg py-2 z-10 border dark:border-gray-700">
-          <button
-            onClick={() => navigate('/')}
-            className="flex items-center gap-2 w-full px-4 py-2 text-text-light dark:text-text-dark hover:bg-gray-100 dark:hover:bg-gray-700 cursor-pointer"
-          >
+          <Button onClick={() => navigate('/')} variant="text">
             <Home size={18} /> Home
-          </button>
-          <button
-            onClick={() => navigate('/upload')}
-            className="flex items-center gap-2 w-full px-4 py-2 text-text-light dark:text-text-dark hover:bg-gray-100 dark:hover:bg-gray-700 cursor-pointer"
-          >
+          </Button>
+          <Button onClick={() => navigate('/upload')} variant="text">
             <Plus size={18} /> Upload
-          </button>
-          <button
-            className="flex items-center gap-2 w-full px-4 py-2 text-text-light dark:text-text-dark hover:bg-gray-100 dark:hover:bg-gray-700 cursor-pointer"
-            onClick={() => navigate('/subscription')}
-          >
+          </Button>
+          <Button onClick={() => navigate('/subscription')} variant="text">
             <UserRoundCheck size={18} /> Subscription
-          </button>
-          <button
-            className="flex items-center gap-2 w-full px-4 py-2 text-text-light dark:text-text-dark hover:bg-gray-100 dark:hover:bg-gray-700 cursor-pointer"
-            onClick={() => navigate(`/channel/${user?._id}`)}
-          >
+          </Button>
+          <Button onClick={() => navigate(`/channel/${user?._id}`)} variant="text">
             <CircleUserRound size={18} /> Me
-          </button>
-          <button
-            className="flex items-center gap-2 w-full px-4 py-2 text-text-light dark:text-text-dark hover:bg-gray-100 dark:hover:bg-gray-700 cursor-pointer"
-            onClick={async () => {
-              setLoading(true);
-              try {
-                const response = await userApi.logout();
-                setLoading(false);
-
-                if (response.statusCode < 400) {
-                  setAlert({ type: 'success', message: 'Logout successful!' });
-
-                  setTimeout(() => {
-                    dispatch(logout());
-                    navigate('/login');
-                  }, 3000);
-                } else {
-                  setAlert({ type: 'error', message: 'Failed to logout.' });
-                }
-              } catch (error) {
-                setLoading(false);
-                setAlert({ type: 'error', message: error.message || 'Logout failed.' });
-              }
-            }}
-          >
-            {loading ? <Spinner /> : <LogOut size={18} />} Logout
-          </button>
+          </Button>
+          <Button onClick={handleLogout} variant="danger" isLoading={loading}>
+            <LogOut size={18} /> Logout
+          </Button>
         </div>
       )}
     </div>
