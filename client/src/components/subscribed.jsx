@@ -2,28 +2,28 @@ import { useEffect, useState } from 'react';
 import { XCircle, UserRound } from 'lucide-react';
 import { subscriptionApi } from '../api/subscription';
 import { useSelector } from 'react-redux';
-import { Spinner, Alert } from '../components'; // Ensure Alert component exists
-import { useNavigate } from 'react-router-dom';
+import { Spinner, Alert } from '../components';
 
 export default function Subscribed() {
   const [subscribedChannels, setSubscribedChannels] = useState([]);
   const [loading, setLoading] = useState(false);
   const [unsubscribeLoading, setUnsubscribeLoading] = useState(null); // Track individual unsubscribe
-  const [alert, setAlert] = useState({ type: '', message: '' }); // Alert state
+  const [alert, setAlert] = useState(null);
 
   const user = useSelector((state) => state.auth.user);
-  const navigate = useNavigate();
 
   useEffect(() => {
     const fetchSubscribedChannels = async () => {
       setLoading(true);
       try {
         const response = await subscriptionApi.getSubscribedChannels(user?._id);
+
         if (response.statusCode < 400) {
           setSubscribedChannels(response.message);
+        } else {
+          setAlert({ type: 'error', message: response.message || 'Failed to fetch subscribed channels.' });
         }
       } catch (error) {
-        console.error(error);
         setAlert({ type: 'error', message: 'Failed to fetch subscribed channels.' });
       }
       setLoading(false);

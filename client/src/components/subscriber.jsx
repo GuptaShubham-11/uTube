@@ -17,7 +17,7 @@ export default function Subscribed() {
     const fetchSubscribedChannels = async () => {
       setLoading(true);
       try {
-        const response = await subscriptionApi.getSubscribedChannels(user._id, {
+        const response = await subscriptionApi.getChannelsSubscriber(user._id, {
           signal: abortController.signal,
         });
         if (response.statusCode < 400) {
@@ -69,10 +69,10 @@ export default function Subscribed() {
             >
               {/* Channel Avatar */}
               <div className="w-24 h-24 rounded-full border-4 border-primary-light dark:border-primary-dark flex items-center justify-center overflow-hidden">
-                {channel?.avatar ? (
+                {channel?.subscriberDetails?.avatar ? (
                   <img
-                    src={channel.avatar}
-                    alt={channel.fullname}
+                    src={channel?.subscriberDetails?.avatar}
+                    alt={channel?.subscriberDetails?.fullname}
                     className="w-full h-full object-cover"
                   />
                 ) : (
@@ -83,7 +83,7 @@ export default function Subscribed() {
               {/* Channel Info */}
               <div className="text-center">
                 <h2 className="text-xl font-semibold text-primary-light dark:text-primary-dark">
-                  {channel.fullname}
+                  {channel?.subscriberDetails?.fullname}
                 </h2>
               </div>
 
