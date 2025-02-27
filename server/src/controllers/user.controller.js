@@ -51,7 +51,7 @@ const registerUser = asyncHandler(async (req, res) => {
 
   const user = await User.create({
     fullname,
-    avatar: avatar.url,
+    avatar: avatar.secure_url,
     coverImage: coverImage?.url || "",
     email,
     password,
@@ -222,7 +222,7 @@ const updateUserAvatar = asyncHandler(async (req, res) => {
 
   // Delete old avatar only if a previous one exists
   if (oldAvatarPath) {
-    await deleteOnCloudinary(oldAvatarPath);
+    await deleteOnCloudinary(oldAvatarPath, "image");
   }
 
   res.status(200).json(new ApiResponse(200, user, "Avatar updated successfully."));
@@ -256,7 +256,7 @@ const updateUserCoverImage = asyncHandler(async (req, res) => {
 
   // Delete old cover image only if a previous one exists
   if (oldCoverImagePath) {
-    await deleteOnCloudinary(oldCoverImagePath);
+    await deleteOnCloudinary(oldCoverImagePath, "image");
   }
 
   res.status(200).json(new ApiResponse(200, user, "Cover image updated successfully."));

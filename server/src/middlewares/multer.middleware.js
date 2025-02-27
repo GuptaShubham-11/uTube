@@ -3,7 +3,7 @@ import fs from "fs";
 import path from "path";
 
 // Ensure the upload directory exists
-const tempDir = path.join(process.cwd(), "server/Public/temp");
+const tempDir = path.join(process.cwd(), "./Public/temp");
 if (!fs.existsSync(tempDir)) {
   fs.mkdirSync(tempDir, { recursive: true });
 }
