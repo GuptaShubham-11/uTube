@@ -199,48 +199,69 @@ const updateUserAvatar = asyncHandler(async (req, res) => {
   const avatarLocalPath = req.file?.path;
   const oldAvatarPath = req.user?.avatar;
 
-  if (!avatarLocalPath)
+  if (!avatarLocalPath) {
     throw new ApiError(400, "Avatar is required for update.");
+  }
 
+  // Upload new avatar
   const avatar = await uploadOnCloudinary(avatarLocalPath);
-  if (!avatar.url) throw new ApiError(400, "Avatar upload failed.");
+  if (!avatar?.secure_url) {
+    throw new ApiError(400, "Avatar upload failed.");
+  }
 
+  // Update user avatar in DB
   const user = await User.findByIdAndUpdate(
     req.user._id,
-    { $set: { avatar: avatar.url } },
-    { new: true },
+    { $set: { avatar: avatar.secure_url } },
+    { new: true }
   ).select("-password");
-  await deleteOnCloudinary(oldAvatarPath);
 
-  res
-    .status(200)
-    .json(new ApiResponse(200, user, "Avatar updated successfully."));
+  if (!user) {
+    throw new ApiError(500, "User update failed.");
+  }
+
+  // Delete old avatar only if a previous one exists
+  if (oldAvatarPath) {
+    await deleteOnCloudinary(oldAvatarPath);
+  }
+
+  res.status(200).json(new ApiResponse(200, user, "Avatar updated successfully."));
 });
 
 // Update user cover image
 const updateUserCoverImage = asyncHandler(async (req, res) => {
   const coverImageLocalPath = req.file?.path;
-  console.log(coverImageLocalPath);
-
   const oldCoverImagePath = req.user?.coverImage;
 
-  if (!coverImageLocalPath)
+  if (!coverImageLocalPath) {
     throw new ApiError(400, "Cover image is required for update.");
+  }
 
+  // Upload new cover image
   const coverImage = await uploadOnCloudinary(coverImageLocalPath);
-  if (!coverImage.url) throw new ApiError(400, "Cover image upload failed.");
+  if (!coverImage?.secure_url) {
+    throw new ApiError(400, "Cover image upload failed.");
+  }
 
+  // Update user cover image in DB
   const user = await User.findByIdAndUpdate(
     req.user._id,
-    { $set: { coverImage: coverImage.url } },
-    { new: true },
+    { $set: { coverImage: coverImage.secure_url } },
+    { new: true }
   ).select("-password");
-  await deleteOnCloudinary(oldCoverImagePath);
 
-  res
-    .status(200)
-    .json(new ApiResponse(200, user, "Cover image updated successfully."));
+  if (!user) {
+    throw new ApiError(500, "User update failed.");
+  }
+
+  // Delete old cover image only if a previous one exists
+  if (oldCoverImagePath) {
+    await deleteOnCloudinary(oldCoverImagePath);
+  }
+
+  res.status(200).json(new ApiResponse(200, user, "Cover image updated successfully."));
 });
+
 
 // Get user channel profile
 const getUserChannelProfile = asyncHandler(async (req, res) => {
