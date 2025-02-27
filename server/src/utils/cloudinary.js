@@ -62,7 +62,9 @@ const extractPublicId = (url) => {
     const parts = url.split("/");
     const filename = parts.pop();
     const versionIndex = filename.indexOf("v");
-    return versionIndex !== -1 ? filename.slice(versionIndex) : filename.split(".")[0];
+    return versionIndex !== -1
+      ? filename.slice(versionIndex)
+      : filename.split(".")[0];
   } catch (error) {
     console.error("Error extracting public_id:", error);
     return null;

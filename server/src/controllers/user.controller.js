@@ -213,7 +213,7 @@ const updateUserAvatar = asyncHandler(async (req, res) => {
   const user = await User.findByIdAndUpdate(
     req.user._id,
     { $set: { avatar: avatar.secure_url } },
-    { new: true }
+    { new: true },
   ).select("-password");
 
   if (!user) {
@@ -225,7 +225,9 @@ const updateUserAvatar = asyncHandler(async (req, res) => {
     await deleteOnCloudinary(oldAvatarPath, "image");
   }
 
-  res.status(200).json(new ApiResponse(200, user, "Avatar updated successfully."));
+  res
+    .status(200)
+    .json(new ApiResponse(200, user, "Avatar updated successfully."));
 });
 
 // Update user cover image
@@ -247,7 +249,7 @@ const updateUserCoverImage = asyncHandler(async (req, res) => {
   const user = await User.findByIdAndUpdate(
     req.user._id,
     { $set: { coverImage: coverImage.secure_url } },
-    { new: true }
+    { new: true },
   ).select("-password");
 
   if (!user) {
@@ -259,9 +261,10 @@ const updateUserCoverImage = asyncHandler(async (req, res) => {
     await deleteOnCloudinary(oldCoverImagePath, "image");
   }
 
-  res.status(200).json(new ApiResponse(200, user, "Cover image updated successfully."));
+  res
+    .status(200)
+    .json(new ApiResponse(200, user, "Cover image updated successfully."));
 });
-
 
 // Get user channel profile
 const getUserChannelProfile = asyncHandler(async (req, res) => {
