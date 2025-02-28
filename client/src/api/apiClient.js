@@ -45,7 +45,7 @@ apiClient.interceptors.response.use(
         const refreshResponse = await axios.post(
           `${import.meta.env.VITE_BASE_URL}/api/v1/users/refresh-token`,
           {
-            token: refreshToken,
+            refreshToken: refreshToken,
           }
         );
 
