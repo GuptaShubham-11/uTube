@@ -1,15 +1,8 @@
-import axios from 'axios';
-
-const client = axios.create({
-  baseURL: `${import.meta.env.VITE_BASE_URL}/api/v1`,
-  headers: {
-    'Content-Type': 'application/json',
-  },
-});
+import apiClient from './apiClient.js';
 
 const signUp = async (data) => {
   try {
-    const response = await client.post('/users/register', data, {
+    const response = await apiClient.post('/users/register', data, {
       headers: {
         'Content-Type': 'multipart/form-data',
       },
@@ -22,14 +15,12 @@ const signUp = async (data) => {
 
 const login = async (data) => {
   try {
-    const response = await client.post('/users/login', data);
+    const response = await apiClient.post('/users/login', data);
     return response.data;
   } catch (error) {
     return error.response?.data || { message: 'An error occurred' };
   }
 };
-
-import apiClient from './apiClient.js';
 
 const logout = async () => {
   try {

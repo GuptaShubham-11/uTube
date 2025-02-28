@@ -21,23 +21,21 @@ export default function ChannelPage() {
 
   const isOwner = user?._id === id;
 
-  const fetchChannelData = async () => {
-    try {
-      const response = await userApi.getUserChannelProfile(id);
-
-      if (response.statusCode < 400) {
-        setChannelData(response.message);
-        setNewName(response.message.fullname);
-        setIsSubscribed(response.message.isSubscribed);
-      } else {
-        setAlert({ type: 'error', message: 'Failed to fetch channel data.' });
-      }
-    } catch (error) {
-      setAlert({ type: 'error', message: error.message || 'Failed to fetch channel data.' });
-    }
-  };
-
   useEffect(() => {
+    const fetchChannelData = async () => {
+      try {
+        const response = await userApi.getUserChannelProfile(id);
+        if (response.statusCode < 400) {
+          setChannelData(response.message);
+          setNewName(response.message.fullname);
+          setIsSubscribed(response.message.isSubscribed);
+        } else {
+          setAlert({ type: 'error', message: 'Failed to fetch channel data.' });
+        }
+      } catch (error) {
+        setAlert({ type: 'error', message: error.message || 'Failed to fetch channel data.' });
+      }
+    };
     fetchChannelData();
   }, [id, dispatch]);
 
@@ -75,35 +73,16 @@ export default function ChannelPage() {
     if (!file) return;
 
     const formData = new FormData();
-
-    // Ensure correct field name based on type
-    if (type === 'avatar') {
-      formData.append('avatar', file);
-    } else if (type === 'coverImage') {
-      formData.append('coverImage', file);
-    } else {
-      setAlert({ type: 'error', message: 'Invalid image type.' });
-      return;
-    }
+    formData.append(type, file);
 
     try {
-      let response;
-      if (type === 'avatar') {
-        response = await userApi.updateAvatar(formData);
-      } else if (type === 'coverImage') {
-        response = await userApi.updateCoverImage(formData);
-      }
-      console.log(response);
-
+      const response = type === 'avatar' ? await userApi.updateAvatar(formData) : await userApi.updateCoverImage(formData);
       if (response?.statusCode < 400) {
-        fetchChannelData();
         setAlert({ type: 'success', message: 'Image updated successfully!' });
+        fetchChannelData();
       }
     } catch (error) {
-      setAlert({
-        type: 'error',
-        message: error.response?.data?.message || 'Failed to upload image.',
-      });
+      setAlert({ type: 'error', message: error.response?.data?.message || 'Failed to upload image.' });
     }
   };
 
@@ -113,7 +92,7 @@ export default function ChannelPage() {
         <div className="fixed top-15 right-5 z-50">
           <Alert type={alert.type} message={alert.message} onClose={() => setAlert(null)} />
         </div>
-      )}{' '}
+      )}
       <div className="relative">
         <img
           src={channelData?.coverImage || '/default-cover.jpg'}
@@ -123,12 +102,7 @@ export default function ChannelPage() {
         {isOwner && (
           <label className="absolute bottom-4 right-4 cursor-pointer bg-black p-2 rounded">
             <ImageIcon className="text-white" size={20} />
-            <input
-              type="file"
-              accept="image/*"
-              className="hidden"
-              onChange={(e) => handleImageUpload(e, 'coverImage')}
-            />
+            <input type="file" accept="image/*" className="hidden" onChange={(e) => handleImageUpload(e, 'coverImage')} />
           </label>
         )}
       </div>
@@ -143,63 +117,36 @@ export default function ChannelPage() {
             {isOwner && (
               <label className="absolute bottom-0 right-0 cursor-pointer p-2 rounded-full bg-gray-800">
                 <Camera className="text-white" size={20} />
-                <input
-                  type="file"
-                  accept="image/*"
-                  className="hidden"
-                  onChange={(e) => handleImageUpload(e, 'avatar')}
-                />
+                <input type="file" accept="image/*" className="hidden" onChange={(e) => handleImageUpload(e, 'avatar')} />
               </label>
             )}
           </div>
           <div>
             {editingName ? (
               <div className="flex items-center gap-2">
-                <input
-                  type="text"
-                  value={newName}
-                  onChange={(e) => setNewName(e.target.value)}
-                  className="text-xl font-bold border-b-2 border-blue-500 focus:outline-none bg-transparent"
-                />
+                <input type="text" value={newName} onChange={(e) => setNewName(e.target.value)} className="text-xl font-bold border-b-2 border-blue-500 focus:outline-none bg-transparent" />
                 <Save size={20} onClick={handleNameChange} className="cursor-pointer" />
               </div>
             ) : (
               <h1 className="text-3xl font-bold flex items-center gap-2">
-                {channelData?.fullname || 'Unknown'}{' '}
-                {isOwner && (
-                  <EditIcon
-                    size={18}
-                    onClick={() => setEditingName(true)}
-                    className="cursor-pointer"
-                  />
-                )}
+                {channelData?.fullname || 'Unknown'}
+                {isOwner && <EditIcon size={18} onClick={() => setEditingName(true)} className="cursor-pointer" />}
               </h1>
             )}
-            <p className="text-gray-600">
-              {channelData?.subscribersToCount?.toLocaleString()} subscribers
-            </p>
+            <p className="text-gray-600">{channelData?.subscribersToCount?.toLocaleString()} subscribers</p>
           </div>
         </div>
-        <button
-          className={`px-6 py-3 flex items-center gap-2 text-white rounded-lg transition ${isSubscribed ? 'bg-gray-500' : 'bg-red-600'}`}
-          onClick={toggleSubscribe}
-        >
+        <button className={`px-6 py-3 flex items-center gap-2 text-white rounded-lg transition ${isSubscribed ? 'bg-gray-500' : 'bg-red-600'}`} onClick={toggleSubscribe}>
           {loading ? <Spinner /> : isSubscribed ? <Check size={20} /> : <UserRound size={20} />}
           {isSubscribed ? 'Subscribed' : 'Subscribe'}
         </button>
       </div>
       <div className="flex justify-center space-x-6 border-b border-gray-300 p-4">
-        {['videos', 'playlists', 'history'].map((tab) =>
-          !isOwner && tab === 'history' ? null : (
-            <button
-              key={tab}
-              className={`px-4 py-2 text-lg font-semibold ${activeTab === tab ? 'border-b-2 border-blue-500' : 'text-gray-500'}`}
-              onClick={() => setActiveTab(tab)}
-            >
-              {tab.charAt(0).toUpperCase() + tab.slice(1)}
-            </button>
-          )
-        )}
+        {['videos', 'playlists', 'history'].map((tab) => (!isOwner && tab === 'history' ? null : (
+          <button key={tab} className={`px-4 py-2 text-lg font-semibold ${activeTab === tab ? 'border-b-2 border-blue-500' : 'text-gray-500'}`} onClick={() => setActiveTab(tab)}>
+            {tab.charAt(0).toUpperCase() + tab.slice(1)}
+          </button>
+        )))}
       </div>
       <div className="p-4">
         {activeTab === 'videos' && <VideoList channelId={id} />}

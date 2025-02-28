@@ -35,21 +35,20 @@ export default function Login() {
     setLoading(true);
     try {
       const response = await userApi.login(formData);
-      console.log(response);
 
       if (response.statusCode < 400) {
         setAlert({ type: 'success', message: 'Login successful!' });
-        dispatch(
-          login({
-            user: response.message.user,
-            accessToken: response.message.accessToken,
-            refreshToken: response.message.refreshToken,
-          })
-        );
-        localStorage.setItem('user', JSON.stringify(response.message.user));
         setTimeout(() => {
+          dispatch(
+            login({
+              user: response.message.user,
+              accessToken: response.message.accessToken,
+              refreshToken: response.message.refreshToken,
+            })
+          );
+          localStorage.setItem('user', JSON.stringify(response.message.user));
           navigate('/videos');
-        }, 3000);
+        }, 2000);
       } else {
         setAlert({ type: 'error', message: response.message || 'Login failed.' });
       }
