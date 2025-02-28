@@ -29,7 +29,7 @@ const login = async (data) => {
   }
 };
 
-import { apiClient } from './apiClient.js';
+import apiClient from './apiClient.js';
 
 const logout = async () => {
   try {
