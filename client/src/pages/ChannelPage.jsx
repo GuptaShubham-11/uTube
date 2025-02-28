@@ -47,7 +47,6 @@ export default function ChannelPage() {
       const response = await subscriptionApi.toggleSubscribeButton(channelData?._id);
       if (response.statusCode < 400) {
         setIsSubscribed(!isSubscribed);
-        dispatch(setVideo({ isSubscribed: !isSubscribed }));
       } else {
         setAlert({ type: 'error', message: 'Failed to toggle subscription.' });
       }
