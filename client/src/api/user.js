@@ -1,4 +1,11 @@
-import apiClient from './apiClient.js';
+import axios from 'axios';
+
+const apiClient = axios.create({
+  baseURL: import.meta.env.VITE_BASE_URL,
+  headers: {
+    'Content-Type': 'application/json',
+  },
+});
 
 const signUp = async (data) => {
   try {
@@ -9,7 +16,7 @@ const signUp = async (data) => {
     });
     return response.data;
   } catch (error) {
-    return error.response.data;
+    return error.response?.data || { message: 'An error occurred' };
   }
 };
 
@@ -18,9 +25,11 @@ const login = async (data) => {
     const response = await apiClient.post('/users/login', data);
     return response.data;
   } catch (error) {
-    return error.response.data;
+    return error.response?.data || { message: 'An error occurred' };
   }
 };
+
+import { apiClient } from './apiClient.js';
 
 const logout = async () => {
   try {
