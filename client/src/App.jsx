@@ -1,7 +1,7 @@
 import { BrowserRouter as Router, Routes, Route, Navigate } from 'react-router-dom';
 import { useEffect } from 'react';
 import { useSelector, useDispatch } from 'react-redux';
-import { login, logout } from './features/authSlice.js';
+import { login } from './features/authSlice.js';
 import { Layout } from './components';
 import {
   Videos,
@@ -15,7 +15,6 @@ import {
   Login,
   Search,
 } from './pages';
-import { userApi } from './api/user.js';
 
 function App() {
   const theme = useSelector((state) => state.theme.theme);
@@ -26,7 +25,6 @@ function App() {
     const root = document.documentElement;
     root.classList.remove('light', 'dark');
     root.classList.add(theme);
-    getCurrentUser();
 
     const user = JSON.parse(localStorage.getItem('user'));
     const accessToken = localStorage.getItem('accessToken');
@@ -36,13 +34,6 @@ function App() {
     }
   }, [theme, dispatch]);
 
-  const getCurrentUser = async () => {
-    const response = await userApi.getCurrentUser();
-
-    if (response?.message === 'jwt expired') {
-      dispatch(logout());
-    }
-  };
   const routes = [
     { path: '/', element: isAuthenticated ? <Videos /> : <Home /> },
     { path: '/signup', element: isAuthenticated ? <Navigate to="/" /> : <Signup /> },
