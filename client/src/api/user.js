@@ -1,21 +1,12 @@
-import axios from 'axios';
-
-const apiClient = axios.create({
-  baseURL: `${import.meta.env.VITE_BASE_URL}/api/v1/users`,
-  headers: {
-    'Content-Type': 'application/json',
-  },
-});
+import apiClient from './apiClient.js';
 
 const signUp = async (data) => {
   try {
-    const response = await apiClient.post('/register', data, {
+    const response = await apiClient.post('/users/register', data, {
       headers: {
         'Content-Type': 'multipart/form-data',
       },
     });
-    console.log(response);
-
     return response.data;
   } catch (error) {
     return error.response.data;
@@ -24,7 +15,7 @@ const signUp = async (data) => {
 
 const login = async (data) => {
   try {
-    const response = await apiClient.post('/login', data);
+    const response = await apiClient.post('/users/login', data);
     return response.data;
   } catch (error) {
     return error.response.data;
@@ -33,7 +24,7 @@ const login = async (data) => {
 
 const logout = async () => {
   try {
-    const response = await apiClient.post('/logout');
+    const response = await apiClient.post('/users/logout');
     return response.data;
   } catch (error) {
     return error.response.data;
@@ -42,7 +33,7 @@ const logout = async () => {
 
 const refreshAccessToken = async (token) => {
   try {
-    const response = await apiClient.post('/refresh-token', token);
+    const response = await apiClient.post('/users/refresh-token', token);
     return response.data;
   } catch (error) {
     return error.response.data;
@@ -52,7 +43,7 @@ const refreshAccessToken = async (token) => {
 const updateFullname = async (data) => {
   try {
     const token = localStorage.getItem('accessToken');
-    const response = await apiClient.patch('/update-user-details', data, {
+    const response = await apiClient.patch('/users/update-user-details', data, {
       headers: {
         Authorization: `Bearer ${token}`,
       },
@@ -66,7 +57,7 @@ const updateFullname = async (data) => {
 const updateAvatar = async (data) => {
   try {
     const token = localStorage.getItem('accessToken');
-    const response = await apiClient.patch('/update-user-avatar', data, {
+    const response = await apiClient.patch('/users/update-user-avatar', data, {
       headers: {
         'Content-Type': 'multipart/form-data',
         Authorization: `Bearer ${token}`,
@@ -81,7 +72,7 @@ const updateAvatar = async (data) => {
 const updateCoverImage = async (data) => {
   const token = localStorage.getItem('accessToken');
   try {
-    const response = await apiClient.patch('/update-user-cover', data, {
+    const response = await apiClient.patch('/users/update-user-cover', data, {
       headers: {
         'Content-Type': 'multipart/form-data',
         Authorization: `Bearer ${token}`,
@@ -96,7 +87,7 @@ const updateCoverImage = async (data) => {
 const getUserChannelProfile = async (id) => {
   const token = localStorage.getItem('accessToken');
   try {
-    const response = await apiClient.get(`/c/${id}`, {
+    const response = await apiClient.get(`/users/c/${id}`, {
       headers: {
         Authorization: `Bearer ${token}`,
       },
@@ -110,7 +101,7 @@ const getUserChannelProfile = async (id) => {
 const getWatchHistory = async () => {
   const token = localStorage.getItem('accessToken');
   try {
-    const response = await apiClient.get('/history', {
+    const response = await apiClient.get('/users/history', {
       headers: {
         Authorization: `Bearer ${token}`,
       },
@@ -124,7 +115,7 @@ const getWatchHistory = async () => {
 const updateWatchHistory = async (id) => {
   const token = localStorage.getItem('accessToken');
   try {
-    const response = await apiClient.post(`/update-history/${id}`, {
+    const response = await apiClient.post(`/users/update-history/${id}`, {
       headers: {
         Authorization: `Bearer ${token}`,
       },
@@ -137,7 +128,7 @@ const updateWatchHistory = async (id) => {
 
 const getCurrentUser = async () => {
   try {
-    const response = await apiClient.get('/current-user');
+    const response = await apiClient.get('/users/current-user');
     return response.data;
   } catch (error) {
     return error.response.data;

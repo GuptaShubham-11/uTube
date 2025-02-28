@@ -1,29 +1,8 @@
-import axios from 'axios';
-
-const apiClient = axios.create({
-  baseURL: `${import.meta.env.VITE_BASE_URL}/api/v1/likes`,
-  headers: {
-    'Content-Type': 'application/json',
-  },
-});
-
-// Add an interceptor to dynamically attach the token to each request
-apiClient.interceptors.request.use(
-  (config) => {
-    const token = localStorage.getItem('accessToken'); // Get token from localStorage
-    if (token) {
-      config.headers['Authorization'] = `Bearer ${token}`; // Attach token if it exists
-    }
-    return config;
-  },
-  (error) => {
-    return Promise.reject(error);
-  }
-);
+import apiClient from './apiClient.js';
 
 const toggleVideoLike = async (videoId) => {
   try {
-    const response = await apiClient.post(`/toggle/v/${videoId}`);
+    const response = await apiClient.post(`/likes/toggle/v/${videoId}`);
     return response.data;
   } catch (error) {
     return error.response.data;
@@ -32,7 +11,7 @@ const toggleVideoLike = async (videoId) => {
 
 const toggleCommentLike = async (commentId) => {
   try {
-    const response = await apiClient.post(`/toggle/c/${commentId}`);
+    const response = await apiClient.post(`/likes/toggle/c/${commentId}`);
     return response.data;
   } catch (error) {
     return error.response.data;
@@ -41,7 +20,7 @@ const toggleCommentLike = async (commentId) => {
 
 const toggleTweetLike = async (tweetId) => {
   try {
-    const response = await apiClient.post(`/toggle/t/${tweetId}`);
+    const response = await apiClient.post(`/likes/toggle/t/${tweetId}`);
     return response.data;
   } catch (error) {
     return error.response.data;
@@ -50,7 +29,7 @@ const toggleTweetLike = async (tweetId) => {
 
 const getLikedVideos = async () => {
   try {
-    const response = await apiClient.get('/videos');
+    const response = await apiClient.get('/likes/videos');
     return response.data;
   } catch (error) {
     return error.response.data;

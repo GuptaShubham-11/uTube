@@ -1,29 +1,8 @@
-import axios from 'axios';
-
-const apiClient = axios.create({
-  baseURL: `${import.meta.env.VITE_BASE_URL}/api/v1/playlist`,
-  headers: {
-    'Content-Type': 'application/json',
-  },
-});
-
-// Add an interceptor to dynamically attach the token to each request
-apiClient.interceptors.request.use(
-  (config) => {
-    const token = localStorage.getItem('accessToken'); // Get token from localStorage
-    if (token) {
-      config.headers['Authorization'] = `Bearer ${token}`; // Attach token if it exists
-    }
-    return config;
-  },
-  (error) => {
-    return Promise.reject(error);
-  }
-);
+import apiClient from './apiClient.js';
 
 const createPlaylist = async (id, data) => {
   try {
-    const response = await apiClient.post(`/${id}`, data);
+    const response = await apiClient.post(`/playlist/${id}`, data);
 
     return response.data;
   } catch (error) {
@@ -33,7 +12,7 @@ const createPlaylist = async (id, data) => {
 
 const getAllPlaylist = async (id) => {
   try {
-    const response = await apiClient.get(`/user/${id}`);
+    const response = await apiClient.get(`/playlist/user/${id}`);
     return response.data;
   } catch (error) {
     return error.response.data;
@@ -42,7 +21,7 @@ const getAllPlaylist = async (id) => {
 
 const getPlaylistById = async (id) => {
   try {
-    const response = await apiClient.get(`/${id}`);
+    const response = await apiClient.get(`/playlist/${id}`);
     return response.data;
   } catch (error) {
     return error.response.data;
@@ -51,7 +30,7 @@ const getPlaylistById = async (id) => {
 
 const deletePlaylist = async (id) => {
   try {
-    const response = await apiClient.delete(`/${id}`);
+    const response = await apiClient.delete(`/playlist/${id}`);
     return response.data;
   } catch (error) {
     return error.response.data;
@@ -60,7 +39,7 @@ const deletePlaylist = async (id) => {
 
 const updatePlaylist = async (id, data) => {
   try {
-    const response = await apiClient.patch(`/${id}`, data);
+    const response = await apiClient.patch(`/playlist/${id}`, data);
     return response.data;
   } catch (error) {
     return error.response.data;
@@ -69,7 +48,7 @@ const updatePlaylist = async (id, data) => {
 
 const addVideoToPlaylist = async (playlistId, videoId) => {
   try {
-    const response = await apiClient.patch(`/add/${videoId}/${playlistId}`);
+    const response = await apiClient.patch(`/playlist/add/${videoId}/${playlistId}`);
     return response.data;
   } catch (error) {
     return error.response.data;
@@ -78,7 +57,7 @@ const addVideoToPlaylist = async (playlistId, videoId) => {
 
 const removeVideoFromPlaylist = async (playlistId, videoId) => {
   try {
-    const response = await apiClient.patch(`/remove/${videoId}/${playlistId}`);
+    const response = await apiClient.patch(`/playlist/remove/${videoId}/${playlistId}`);
     return response.data;
   } catch (error) {
     return error.response.data;

@@ -1,29 +1,8 @@
-import axios from 'axios';
-
-const apiClient = axios.create({
-  baseURL: `${import.meta.env.VITE_BASE_URL}/api/v1/videos`,
-  headers: {
-    'Content-Type': 'application/json',
-  },
-});
-
-// Add an interceptor to dynamically attach the token to each request
-apiClient.interceptors.request.use(
-  (config) => {
-    const token = localStorage.getItem('accessToken'); // Get token from localStorage
-    if (token) {
-      config.headers['Authorization'] = `Bearer ${token}`; // Attach token if it exists
-    }
-    return config;
-  },
-  (error) => {
-    return Promise.reject(error);
-  }
-);
+import apiClient from './apiClient.js';
 
 const uploadVideo = async (data) => {
   try {
-    const response = await apiClient.post('/', data, {
+    const response = await apiClient.post('/videos/', data, {
       headers: {
         'Content-Type': 'multipart/form-data',
       },
@@ -37,7 +16,7 @@ const uploadVideo = async (data) => {
 
 const updateVideo = async (videoId, data) => {
   try {
-    const response = await apiClient.patch(`/${videoId}`, data, {
+    const response = await apiClient.patch(`/videos/${videoId}`, data, {
       headers: {
         'Content-Type': 'multipart/form-data',
       },
@@ -50,7 +29,7 @@ const updateVideo = async (videoId, data) => {
 
 const deleteVideo = async (videoId) => {
   try {
-    const response = await apiClient.delete(`/${videoId}`);
+    const response = await apiClient.delete(`/videos/${videoId}`);
     return response.data;
   } catch (error) {
     return error.response.data;
@@ -59,7 +38,7 @@ const deleteVideo = async (videoId) => {
 
 const getSuggestedVideos = async () => {
   try {
-    const response = await apiClient.get('/suggested-videos');
+    const response = await apiClient.get('/videos/suggested-videos');
     return response.data;
   } catch (error) {
     return error.response.data;
@@ -86,7 +65,7 @@ const getAllVideos = async ({
 
 const updateVideoViews = async (videoId) => {
   try {
-    const response = await apiClient.patch(`/${videoId}`);
+    const response = await apiClient.patch(`/videos/${videoId}`);
     return response.data;
   } catch (error) {
     return error.response.data;
