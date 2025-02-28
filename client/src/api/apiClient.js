@@ -44,9 +44,8 @@ apiClient.interceptors.response.use(
 
         const refreshResponse = await axios.post(
           `${import.meta.env.VITE_BASE_URL}/api/v1/users/refresh-token`,
-          {
-            refreshToken: refreshToken,
-          }
+          { refreshToken: refreshToken },
+          { withCredentials: true }
         );
 
         // ✅ Update Redux store with new token
