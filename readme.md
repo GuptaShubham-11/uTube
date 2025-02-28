@@ -7,6 +7,7 @@ A full-stack **YouTube-like** video platform built using **MERN stack** with use
 ## 🌟 Features
 
 ### 🖥️ **Frontend (React + Vite)**
+
 - ✅ **User Authentication** (Signup/Login)
 - 🎬 **Upload and Manage Videos**
 - ❤️ **Like, Comment, and Subscribe** to Channels
@@ -15,6 +16,7 @@ A full-stack **YouTube-like** video platform built using **MERN stack** with use
 - 🌙 **Dark/Light Theme Toggle**
 
 ### ⚡ **Backend (Node.js + Express)**
+
 - 🔐 **JWT Authentication & Secure APIs**
 - 📹 **Video Processing and Storage (Cloudinary)**
 - 📂 **Secure File Uploads (Multer)**
@@ -28,11 +30,13 @@ A full-stack **YouTube-like** video platform built using **MERN stack** with use
 ## 🛠 Tech Stack
 
 ### 🏗️ **Frontend**
+
 - ⚛️ React (Vite + Tailwind CSS)
 - 🗃 Redux Toolkit (State Management)
 - 🌍 React Router (Navigation)
 
 ### 🖥️ **Backend**
+
 - 🛠 Node.js + Express.js
 - 🛢 MongoDB (Mongoose ORM)
 - ☁️ Cloudinary (Video Storage)
@@ -74,33 +78,43 @@ A full-stack **YouTube-like** video platform built using **MERN stack** with use
 ## 🔧 Installation & Setup
 
 ### 1️⃣ Clone the Repository
+
 ```sh
 git clone https://github.com/guptashubham-11/uTube.git
 cd uTube
 ```
 
 ### 2️⃣ Install Dependencies
+
 #### 📌 Frontend:
+
 ```sh
 cd client
 npm install
 ```
+
 #### 📌 Backend:
+
 ```sh
 cd server
 npm install
 ```
 
 ### 3️⃣ Setup Environment Variables
+
 Create a `.env` file in both `client` and `server` directories following `.env.sample` as a reference.
 
 ### 4️⃣ Run the Project
+
 #### 🚀 Start Frontend:
+
 ```sh
 cd client
 npm run dev
 ```
+
 #### 🚀 Start Backend:
+
 ```sh
 cd server
 npm start
@@ -111,23 +125,26 @@ npm start
 ## 📸 UI Preview
 
 ### 🎨 **Dark Mode**
+
 ![Dark Mode](./screenshotOfUtube/HomeDark.jpeg)
 
 ### 🌞 **Light Mode**
+
 ![Light Mode](./screenshotOfUtube/HomeLight.jpeg)
 
 ### 📺 **Videos Screen**
+
 ![Videos Screen](./screenshotOfUtube/Videos.jpeg)
 
 ### 📜 **Subscriptions Management**
+
 ![Subscriptions](./screenshotOfUtube/Subscriptions.jpeg)
 
-
 ## 🤝 Contributing
+
 Suggestions are always welcome! 🌟 Feel free to contribute by **forking** the repository, making changes, and submitting a **pull request**. 🚀
 
 ---
-
 
 ---
 
