@@ -21,21 +21,23 @@ export default function ChannelPage() {
 
   const isOwner = user?._id === id;
 
-  useEffect(() => {
-    const fetchChannelData = async () => {
-      try {
-        const response = await userApi.getUserChannelProfile(id);
-        if (response.statusCode < 400) {
-          setChannelData(response.message);
-          setNewName(response.message.fullname);
-          setIsSubscribed(response.message.isSubscribed);
-        } else {
-          setAlert({ type: 'error', message: 'Failed to fetch channel data.' });
-        }
-      } catch (error) {
-        setAlert({ type: 'error', message: error.message || 'Failed to fetch channel data.' });
+  const fetchChannelData = async () => {
+    try {
+      const response = await userApi.getUserChannelProfile(id);
+
+      if (response.statusCode < 400) {
+        setChannelData(response.message);
+        setNewName(response.message.fullname);
+        setIsSubscribed(response.message.isSubscribed);
+      } else {
+        setAlert({ type: 'error', message: 'Failed to fetch channel data.' });
       }
-    };
+    } catch (error) {
+      setAlert({ type: 'error', message: error.message || 'Failed to fetch channel data.' });
+    }
+  };
+
+  useEffect(() => {
     fetchChannelData();
   }, [id, dispatch]);
 
@@ -73,16 +75,29 @@ export default function ChannelPage() {
     if (!file) return;
 
     const formData = new FormData();
-    formData.append(type, file);
+
+    // Ensure correct field name based on type
+    if (type === 'avatar') {
+      formData.append('avatar', file);
+    } else if (type === 'coverImage') {
+      formData.append('coverImage', file);
+    } else {
+      setAlert({ type: 'error', message: 'Invalid image type.' });
+      return;
+    }
 
     try {
-      const response =
-        type === 'avatar'
-          ? await userApi.updateAvatar(formData)
-          : await userApi.updateCoverImage(formData);
+      let response;
+      if (type === 'avatar') {
+        response = await userApi.updateAvatar(formData);
+      } else if (type === 'coverImage') {
+        response = await userApi.updateCoverImage(formData);
+      }
+      console.log(response);
+
       if (response?.statusCode < 400) {
-        setAlert({ type: 'success', message: 'Image updated successfully!' });
         fetchChannelData();
+        setAlert({ type: 'success', message: 'Image updated successfully!' });
       }
     } catch (error) {
       setAlert({
@@ -98,7 +113,7 @@ export default function ChannelPage() {
         <div className="fixed top-15 right-5 z-50">
           <Alert type={alert.type} message={alert.message} onClose={() => setAlert(null)} />
         </div>
-      )}
+      )}{' '}
       <div className="relative">
         <img
           src={channelData?.coverImage || '/default-cover.jpg'}
@@ -150,7 +165,7 @@ export default function ChannelPage() {
               </div>
             ) : (
               <h1 className="text-3xl font-bold flex items-center gap-2">
-                {channelData?.fullname || 'Unknown'}
+                {channelData?.fullname || 'Unknown'}{' '}
                 {isOwner && (
                   <EditIcon
                     size={18}
