@@ -54,7 +54,7 @@ const getAllVideos = async ({
   userId = '',
 }) => {
   try {
-    const response = await apiClient.get('', {
+    const response = await apiClient.get('/videos/', {
       params: { page, limit, query, sortBy, sortType, userId },
     });
     return response.data;
