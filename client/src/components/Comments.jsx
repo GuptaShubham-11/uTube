@@ -94,7 +94,7 @@ const Comments = ({ videoId }) => {
   return (
     <div className="mt-6">
       {alert && (
-        <div className="fixed top-10 right-5 z-50">
+        <div className="fixed top-15 right-5 z-50">
           <Alert type={alert.type} message={alert.message} onClose={() => setAlert(null)} />
         </div>
       )}

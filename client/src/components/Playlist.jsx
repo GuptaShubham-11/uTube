@@ -12,7 +12,7 @@ const Playlist = ({ channelId }) => {
   const [editingPlaylist, setEditingPlaylist] = useState(null);
   const [selectedPlaylist, setSelectedPlaylist] = useState(null);
   const [loading, setLoading] = useState(false);
-  const [alert, setAlert] = useState({ type: '', message: '' });
+  const [alert, setAlert] = useState(null);
   const [isEditModalOpen, setIsEditModalOpen] = useState(false);
 
   const isOwner = user?._id === channelId;
@@ -134,7 +134,7 @@ const Playlist = ({ channelId }) => {
   return (
     <div className="p-6 max-w-6xl mx-auto">
       {alert && (
-        <div className="fixed top-10 right-5 z-50">
+        <div className="fixed top-15 right-5 z-50">
           <Alert type={alert.type} message={alert.message} onClose={() => setAlert(null)} />
         </div>
       )}
