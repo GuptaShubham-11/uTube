@@ -42,9 +42,12 @@ apiClient.interceptors.response.use(
           return Promise.reject(error);
         }
 
-        const refreshResponse = await axios.post(`${import.meta.env.VITE_BASE_URL}/api/v1/users/refresh-token`, {
-          token: refreshToken,
-        });
+        const refreshResponse = await axios.post(
+          `${import.meta.env.VITE_BASE_URL}/api/v1/users/refresh-token`,
+          {
+            token: refreshToken,
+          }
+        );
 
         // ✅ Update Redux store with new token
         store.dispatch(
