@@ -177,36 +177,42 @@ const Playlist = ({ channelId }) => {
               />
             </div>
           )}
-          <div className="mt-8 grid grid-cols-1 sm:grid-cols-2 md:grid-cols-3 lg:grid-cols-4 gap-6">
-            {playlists.map((playlist) => (
-              <div
-                key={playlist._id}
-                className="border border-gray-300 dark:border-gray-700 shadow-md rounded-lg p-5 flex flex-col gap-3 hover:shadow-xl transition-transform hover:scale-105 bg-white dark:bg-gray-800 cursor-pointer relative"
-                onClick={() => openPlaylist(playlist)}
-              >
-                <h3 className="text-lg font-semibold text-gray-900 dark:text-white">
-                  {playlist.name}
-                </h3>
-                <p className="text-sm text-gray-600 dark:text-gray-300">{playlist.description}</p>
-                {isOwner && (
-                  <div className="absolute top-3 right-3 flex gap-2">
-                    <button
-                      onClick={(e) => startEditing(playlist, e)}
-                      className="bg-green-500 hover:bg-green-700 p-2 rounded-full text-white"
-                    >
-                      <Edit size={18} />
-                    </button>
-                    <button
-                      onClick={(e) => handleDeletePlaylist(playlist?._id, e)}
-                      className="bg-red-500 hover:bg-red-700 p-2 rounded-full text-white"
-                    >
-                      <Trash2 size={18} />
-                    </button>
-                  </div>
-                )}
-              </div>
-            ))}
-          </div>
+          {playlists ? (
+            <div className="mt-8 grid grid-cols-1 sm:grid-cols-2 md:grid-cols-3 lg:grid-cols-4 gap-6">
+              {playlists.map((playlist) => (
+                <div
+                  key={playlist._id}
+                  className="border border-gray-300 dark:border-gray-700 shadow-md rounded-lg p-5 flex flex-col gap-3 hover:shadow-xl transition-transform hover:scale-105 bg-white dark:bg-gray-800 cursor-pointer relative"
+                  onClick={() => openPlaylist(playlist)}
+                >
+                  <h3 className="text-lg font-semibold text-gray-900 dark:text-white">
+                    {playlist.name}
+                  </h3>
+                  <p className="text-sm text-gray-600 dark:text-gray-300">{playlist.description}</p>
+                  {isOwner && (
+                    <div className="absolute top-3 right-3 flex gap-2">
+                      <button
+                        onClick={(e) => startEditing(playlist, e)}
+                        className="bg-green-500 hover:bg-green-700 p-2 rounded-full text-white"
+                      >
+                        <Edit size={18} />
+                      </button>
+                      <button
+                        onClick={(e) => handleDeletePlaylist(playlist?._id, e)}
+                        className="bg-red-500 hover:bg-red-700 p-2 rounded-full text-white"
+                      >
+                        <Trash2 size={18} />
+                      </button>
+                    </div>
+                  )}
+                </div>
+              ))}
+            </div>
+          ) : (
+            <p className="text-center text-gray-600 dark:text-gray-300 font-medium">
+              No playlists found 🪶. {isOwner && 'Create a playlist to get started.'}
+            </p>
+          )}
         </>
       )}
       {isEditModalOpen && (
