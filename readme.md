@@ -122,6 +122,22 @@ npm start
 
 ---
 
+## 🚀 Local Run For Must Changes DON'T MISS
+
+### Start Frontend:
+
+#### Vite Config:
+![Vite Config](./screenshotOfUtube/Vite.png)
+
+#### apiClient Config:
+![baseUrl](./screenshotOfUtube/refreshToken.png)
+![apiClient](./screenshotOfUtube/apiClient.png)
+
+### Start Backend:
+
+#### Cross Orign in .env:
+![Cross Orign](./screenshotOfUtube/CrossOrigin.png)
+
 ## 📸 UI Preview
 
 ### 🎨 **Dark Mode**
