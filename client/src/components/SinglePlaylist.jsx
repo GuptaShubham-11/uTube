@@ -77,7 +77,6 @@ const SinglePlaylist = ({ playlist, channelId, onClose }) => {
 
   console.log(videos);
 
-
   if (loading) {
     return (
       <div className="flex justify-center items-center">
