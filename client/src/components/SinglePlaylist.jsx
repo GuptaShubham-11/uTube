@@ -75,8 +75,6 @@ const SinglePlaylist = ({ playlist, channelId, onClose }) => {
     }
   };
 
-  console.log(videos);
-
   if (loading) {
     return (
       <div className="flex justify-center items-center">
@@ -144,7 +142,9 @@ const SinglePlaylist = ({ playlist, channelId, onClose }) => {
               className="w-full h-40 rounded mb-3"
               allowFullScreen
             ></iframe>
-            <h3 className="text-xl font-semibold mb-1 text-gray-900 dark:text-white">{video.title}</h3>
+            <h3 className="text-xl font-semibold mb-1 text-gray-900 dark:text-white">
+              {video.title}
+            </h3>
             <p className="text-sm text-gray-500 mb-4">{video.description}</p>
             {isOwner && (
               <button
