@@ -18,7 +18,6 @@ export default function Subscribed() {
     try {
       const response = await subscriptionApi.getSubscribedChannels(user?._id);
 
-
       if (response.statusCode < 400) {
         setSubscribedChannels(response.message);
       } else {

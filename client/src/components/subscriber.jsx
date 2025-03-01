@@ -32,7 +32,6 @@ export default function Subscribed() {
     fetchSubscribedChannels();
   }, [user?._id]);
 
-
   return (
     <div className="min-h-screen bg-background-light dark:bg-background-dark text-text-light dark:text-text-dark px-6 py-8">
       {alert && (
@@ -71,7 +70,10 @@ export default function Subscribed() {
               </div>
 
               {/* Channel Info */}
-              <div className="text-center" onClick={() => navigate(`/channel/${channel?.subscriber}`)}>
+              <div
+                className="text-center"
+                onClick={() => navigate(`/channel/${channel?.subscriber}`)}
+              >
                 <h2 className="text-xl font-semibold text-primary-light dark:text-primary-dark cursor-pointer">
                   {channel?.subscriberDetails?.fullname}
                 </h2>

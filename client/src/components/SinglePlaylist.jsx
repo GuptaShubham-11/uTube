@@ -11,6 +11,7 @@ const SinglePlaylist = ({ playlist, channelId, onClose }) => {
   const [showPopup, setShowPopup] = useState(false);
   const [selectedVideos, setSelectedVideos] = useState([]);
   const [alert, setAlert] = useState(null);
+  const [loading, setLoading] = useState(false);
   const dispatch = useDispatch();
   const navigate = useNavigate();
   const availableVideos = useSelector((state) => state.video.allVideos);
@@ -18,8 +19,12 @@ const SinglePlaylist = ({ playlist, channelId, onClose }) => {
   const isOwner = user._id === channelId;
 
   const fetchPlaylist = useCallback(async () => {
+    setLoading(true);
     try {
       const response = await playlistApi.getPlaylistById(playlist._id);
+      console.log(response);
+
+      setLoading(false);
       if (response.statusCode < 400) {
         setVideos(response.message?.videos || []);
       }
@@ -70,6 +75,14 @@ const SinglePlaylist = ({ playlist, channelId, onClose }) => {
       setAlert({ message: 'Error removing video.', type: 'error' });
     }
   };
+
+  if (loading) {
+    return (
+      <div className="flex justify-center items-center">
+        <Spinner size={28} />
+      </div>
+    );
+  }
 
   if (videos.length === 0) {
     return (
