@@ -4,7 +4,7 @@ import { useSelector, useDispatch } from 'react-redux';
 import { useNavigate } from 'react-router-dom';
 import { setVideo } from '../features/videoSlice.js';
 import { playlistApi } from '../api/playlist.js';
-import { Button, Alert } from '../components';
+import { Button, Alert, Spinner } from '../components';
 
 const SinglePlaylist = ({ playlist, channelId, onClose }) => {
   const [videos, setVideos] = useState([]);
@@ -22,7 +22,6 @@ const SinglePlaylist = ({ playlist, channelId, onClose }) => {
     setLoading(true);
     try {
       const response = await playlistApi.getPlaylistById(playlist._id);
-      console.log(response);
 
       setLoading(false);
       if (response.statusCode < 400) {
@@ -75,6 +74,9 @@ const SinglePlaylist = ({ playlist, channelId, onClose }) => {
       setAlert({ message: 'Error removing video.', type: 'error' });
     }
   };
+
+  console.log(videos);
+
 
   if (loading) {
     return (
