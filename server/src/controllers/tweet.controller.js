@@ -62,8 +62,8 @@ const getUserTweets = asyncHandler(async (req, res) => {
           totalPages: Math.ceil(totalTweets / limit),
         },
       },
-      "User tweets retrieved successfully.",
-    ),
+      "User tweets retrieved successfully."
+    )
   );
 });
 
@@ -89,7 +89,7 @@ const updateTweet = asyncHandler(async (req, res) => {
     },
     {
       new: true,
-    },
+    }
   );
 
   return res

@@ -96,8 +96,8 @@ const getVideoComments = asyncHandler(async (req, res) => {
         page,
         limit,
       },
-      "Comments retrieved successfully.",
-    ),
+      "Comments retrieved successfully."
+    )
   );
 });
 
@@ -151,13 +151,13 @@ const updateComment = asyncHandler(async (req, res) => {
     },
     {
       new: true,
-    },
+    }
   );
 
   return res
     .status(200)
     .json(
-      new ApiResponse(200, updatedComment, "Comment updated successfully."),
+      new ApiResponse(200, updatedComment, "Comment updated successfully.")
     );
 });
 

@@ -21,7 +21,7 @@ export const verifyJWT = asyncHandler(async (req, _, next) => {
 
     // Step 4: Look up the user in the database using the decoded token's _id
     const user = await User.findById(decodedToken?._id).select(
-      "-password -refreshToken", // Exclude password and refreshToken from the result
+      "-password -refreshToken" // Exclude password and refreshToken from the result
     );
 
     // Step 5: If user not found, throw error

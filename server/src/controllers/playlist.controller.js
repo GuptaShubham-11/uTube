@@ -82,7 +82,7 @@ const getUserPlaylists = asyncHandler(async (req, res) => {
   return res
     .status(200)
     .json(
-      new ApiResponse(200, playlists, "User playlists retrieved successfully."),
+      new ApiResponse(200, playlists, "User playlists retrieved successfully.")
     );
 });
 
@@ -127,13 +127,13 @@ const addVideoToPlaylist = asyncHandler(async (req, res) => {
     },
     {
       new: true,
-    },
+    }
   );
 
   return res
     .status(200)
     .json(
-      new ApiResponse(200, playlist, "Video add in playlist successfully."),
+      new ApiResponse(200, playlist, "Video add in playlist successfully.")
     );
 });
 
@@ -158,13 +158,13 @@ const removeVideoFromPlaylist = asyncHandler(async (req, res) => {
     },
     {
       new: true,
-    },
+    }
   );
 
   return res
     .status(200)
     .json(
-      new ApiResponse(200, playlist, "Video remove in playlist successfully."),
+      new ApiResponse(200, playlist, "Video remove in playlist successfully.")
     );
 });
 
@@ -210,7 +210,7 @@ const updatePlaylist = asyncHandler(async (req, res) => {
     },
     {
       new: true,
-    },
+    }
   );
 
   return res

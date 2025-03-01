@@ -135,7 +135,7 @@ const getLikedVideos = asyncHandler(async (req, res) => {
   return res
     .status(200)
     .json(
-      new ApiResponse(200, likedVideos, "Liked videos retrieved successfully."),
+      new ApiResponse(200, likedVideos, "Liked videos retrieved successfully.")
     );
 });
 

@@ -31,7 +31,7 @@ router
         maxCount: 1,
       },
     ]),
-    publishAVideo,
+    publishAVideo
   );
 
 router

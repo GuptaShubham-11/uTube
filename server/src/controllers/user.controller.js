@@ -20,7 +20,7 @@ const generateAccessAndRefreshTokens = async (userId) => {
   } catch (error) {
     throw new ApiError(
       500,
-      "Server error generating access and refresh tokens.",
+      "Server error generating access and refresh tokens."
     );
   }
 };
@@ -57,7 +57,7 @@ const registerUser = asyncHandler(async (req, res) => {
   });
 
   const createdUser = await User.findById(user._id).select(
-    "-password -refreshToken",
+    "-password -refreshToken"
   );
   if (!createdUser) throw new ApiError(500, "User registration failed.");
 
@@ -79,11 +79,11 @@ const loginUser = asyncHandler(async (req, res) => {
   if (!isPasswordValid) throw new ApiError(401, "Incorrect password.");
 
   const { accessToken, refreshToken } = await generateAccessAndRefreshTokens(
-    user._id,
+    user._id
   );
 
   const loggedInUser = await User.findById(user._id).select(
-    "-password -refreshToken",
+    "-password -refreshToken"
   );
   const options = { httpOnly: true, secure: true };
 
@@ -95,8 +95,8 @@ const loginUser = asyncHandler(async (req, res) => {
       new ApiResponse(
         200,
         { user: loggedInUser, accessToken, refreshToken },
-        "User logged in successfully.",
-      ),
+        "User logged in successfully."
+      )
     );
 });
 
@@ -105,7 +105,7 @@ const logoutUser = asyncHandler(async (req, res) => {
   await User.findByIdAndUpdate(
     req.user._id,
     { $unset: { refreshToken: 1 } },
-    { new: true },
+    { new: true }
   );
 
   const options = { httpOnly: true, secure: true };
@@ -127,7 +127,7 @@ const refreshAccessToken = asyncHandler(async (req, res) => {
 
     const decodedToken = jwt.verify(
       incomingRefreshToken,
-      process.env.REFRESH_TOKEN_SECRET,
+      process.env.REFRESH_TOKEN_SECRET
     );
     const user = await User.findById(decodedToken._id);
 
@@ -146,8 +146,8 @@ const refreshAccessToken = asyncHandler(async (req, res) => {
         new ApiResponse(
           200,
           { accessToken, refreshToken: newRefreshToken },
-          "Access token refreshed successfully.",
-        ),
+          "Access token refreshed successfully."
+        )
       );
   } catch (error) {
     throw new ApiError(401, error.message || "Invalid refresh token.");
@@ -187,7 +187,7 @@ const updateAccountDetails = asyncHandler(async (req, res) => {
   const user = await User.findByIdAndUpdate(
     req.user._id,
     { $set: { fullname } },
-    { new: true },
+    { new: true }
   ).select("-password");
 
   res
@@ -214,7 +214,7 @@ const updateUserAvatar = asyncHandler(async (req, res) => {
   const user = await User.findByIdAndUpdate(
     req.user._id,
     { $set: { avatar: avatar.secure_url } },
-    { new: true },
+    { new: true }
   ).select("-password");
 
   if (!user) {
@@ -250,7 +250,7 @@ const updateUserCoverImage = asyncHandler(async (req, res) => {
   const user = await User.findByIdAndUpdate(
     req.user._id,
     { $set: { coverImage: coverImage.secure_url } },
-    { new: true },
+    { new: true }
   ).select("-password");
 
   if (!user) {
@@ -318,7 +318,7 @@ const getUserChannelProfile = asyncHandler(async (req, res) => {
   res
     .status(200)
     .json(
-      new ApiResponse(200, channel[0], "User channel fetched successfully."),
+      new ApiResponse(200, channel[0], "User channel fetched successfully.")
     );
 });
 
@@ -354,8 +354,8 @@ const getWatchHistory = asyncHandler(async (req, res) => {
       new ApiResponse(
         200,
         user[0].watchHistory,
-        "Watch history fetched successfully.",
-      ),
+        "Watch history fetched successfully."
+      )
     );
 });
 
@@ -380,7 +380,7 @@ const updateWatchHistory = async (req, res) => {
 
     // Remove video if it already exists in history
     user.watchHistory = user.watchHistory.filter(
-      (id) => id.toString() !== videoId,
+      (id) => id.toString() !== videoId
     );
 
     // Add new video to the start (most recent)
@@ -399,8 +399,8 @@ const updateWatchHistory = async (req, res) => {
         new ApiResponse(
           200,
           { watchHistory: user.watchHistory },
-          "Watch history updated successfully.",
-        ),
+          "Watch history updated successfully."
+        )
       );
   } catch (error) {
     res
@@ -408,8 +408,8 @@ const updateWatchHistory = async (req, res) => {
       .json(
         new ApiError(
           500,
-          error.message || "Server error updating watch history.",
-        ),
+          error.message || "Server error updating watch history."
+        )
       );
   }
 };

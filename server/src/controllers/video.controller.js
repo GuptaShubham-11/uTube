@@ -81,7 +81,7 @@ const getAllVideos = asyncHandler(async (req, res) => {
   ]);
 
   const totalVideos = await Video.countDocuments(
-    query ? { title: { $regex: query, $options: "i" } } : {},
+    query ? { title: { $regex: query, $options: "i" } } : {}
   );
 
   return res
@@ -90,8 +90,8 @@ const getAllVideos = asyncHandler(async (req, res) => {
       new ApiResponse(
         200,
         { videos, total: totalVideos },
-        "Videos retrieved successfully.",
-      ),
+        "Videos retrieved successfully."
+      )
     );
 });
 
@@ -195,7 +195,7 @@ const updateVideo = asyncHandler(async (req, res) => {
     },
     {
       new: true,
-    },
+    }
   );
 
   await deleteOnCloudinary(oldThumbnailPath, "image");
@@ -255,8 +255,8 @@ const togglePublishStatus = asyncHandler(async (req, res) => {
       new ApiResponse(
         200,
         updatedVideo,
-        "Video publish status toggled successfully.",
-      ),
+        "Video publish status toggled successfully."
+      )
     );
 });
 
@@ -285,7 +285,7 @@ const updateVideoViews = asyncHandler(async (req, res) => {
   return res
     .status(200)
     .json(
-      new ApiResponse(200, updatedVideo, "Video views updated successfully."),
+      new ApiResponse(200, updatedVideo, "Video views updated successfully.")
     );
 });
 
@@ -333,8 +333,8 @@ const getSuggestedVideos = asyncHandler(async (req, res) => {
       new ApiResponse(
         200,
         suggestedVideos,
-        "Suggested videos retrieved successfully.",
-      ),
+        "Suggested videos retrieved successfully."
+      )
     );
 });
 
