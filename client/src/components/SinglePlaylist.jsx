@@ -129,23 +129,23 @@ const SinglePlaylist = ({ playlist, channelId, onClose }) => {
 
       {/* Video List Section */}
       <div className="grid grid-cols-1 sm:grid-cols-2 md:grid-cols-3 gap-6">
-        {videos.map(({ _id, videoFile, title, description }) => (
+        {videos.map((video) => (
           <div
-            key={_id}
+            key={video._id}
             className="bg-white dark:bg-gray-700 shadow-lg rounded-lg p-4 relative hover:scale-105 transition-transform cursor-pointer"
             onClick={() => {
-              dispatch(setVideo({ video: { _id, videoFile, title, description } }));
+              dispatch(setVideo({ video: video }));
               navigate(`/video`);
             }}
           >
             <iframe
-              src={videoFile}
-              title={title}
+              src={video.videoFile}
+              title={video.title}
               className="w-full h-40 rounded mb-3"
               allowFullScreen
             ></iframe>
-            <h3 className="text-xl font-semibold mb-1 text-gray-900 dark:text-white">{title}</h3>
-            <p className="text-sm text-gray-500 mb-4">{description}</p>
+            <h3 className="text-xl font-semibold mb-1 text-gray-900 dark:text-white">{video.title}</h3>
+            <p className="text-sm text-gray-500 mb-4">{video.description}</p>
             {isOwner && (
               <button
                 className="bg-red-600 hover:bg-red-700 p-2 rounded absolute top-3 right-3"
