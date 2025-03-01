@@ -35,7 +35,7 @@ apiClient.interceptors.response.use(
       originalRequest._retry = true;
       try {
         const refreshToken =
-          localStorage.getItem('refreshToken') || store.getState().auth.refreshToken;
+          localStorage.getItem('refreshToken') || store.getState().auth?.refreshToken;
         if (!refreshToken) {
           console.error('[REFRESH TOKEN MISSING] Redirecting to login.');
           store.dispatch(logout());
