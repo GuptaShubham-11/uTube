@@ -47,6 +47,7 @@ export default function Login() {
             })
           );
           localStorage.setItem('user', JSON.stringify(response.message.user));
+          localStorage.setItem('refreshToken', JSON.stringify(response.message.refreshToken));
           navigate('/videos');
         }, 2000);
       } else {
