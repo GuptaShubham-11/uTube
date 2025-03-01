@@ -20,7 +20,6 @@ const SuggestedVideos = ({ currentVideoId }) => {
         setError('Failed to load suggestions.');
       }
     } catch (err) {
-      console.error('Error fetching suggested videos:', err);
       setError('An error occurred while fetching videos.');
     }
     setLoading(false);

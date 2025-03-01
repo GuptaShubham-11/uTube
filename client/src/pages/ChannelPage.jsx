@@ -92,7 +92,6 @@ export default function ChannelPage() {
       } else if (type === 'coverImage') {
         response = await userApi.updateCoverImage(formData);
       }
-      console.log(response);
 
       if (response?.statusCode < 400) {
         fetchChannelData();

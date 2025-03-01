@@ -7,7 +7,7 @@ dotenv.config({ path: "./.env" });
 connectDB()
   .then(() => {
     app.on("error", (error) => {
-      console.error("UNEXPECTED ERROR:", error);
+      // console.error("UNEXPECTED ERROR:", error);
       process.exit(1);
     });
 

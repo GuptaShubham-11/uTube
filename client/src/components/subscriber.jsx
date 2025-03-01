@@ -1,70 +1,60 @@
 import { useEffect, useState } from 'react';
-import { XCircle, UserRound } from 'lucide-react';
+import { UserRound } from 'lucide-react';
 import { subscriptionApi } from '../api/subscription';
 import { useSelector } from 'react-redux';
-import { Spinner } from '../components';
+import { Spinner, Alert } from '../components';
+import { useNavigate } from 'react-router-dom';
 
 export default function Subscribed() {
-  const [subscribedChannels, setSubscribedChannels] = useState([]);
+  const [subscriberChannels, setSubscriberChannels] = useState([]);
   const [loading, setLoading] = useState(false);
-  const [loadingUnsubscribing, setLoadingUnsubscribing] = useState(null);
+  const [alert, setAlert] = useState(null);
   const user = useSelector((state) => state.auth.user);
+  const navigate = useNavigate();
 
-  useEffect(() => {
-    if (!user?._id) return;
-
-    const abortController = new AbortController();
-    const fetchSubscribedChannels = async () => {
-      setLoading(true);
-      try {
-        const response = await subscriptionApi.getChannelsSubscriber(user._id, {
-          signal: abortController.signal,
-        });
-        if (response.statusCode < 400) {
-          setSubscribedChannels(response.message);
-        }
-      } catch (error) {
-        if (error.name !== 'AbortError') console.error(error);
-      } finally {
-        setLoading(false);
-      }
-    };
-
-    fetchSubscribedChannels();
-    return () => abortController.abort(); // Cleanup function to prevent memory leaks
-  }, [user?._id]);
-
-  const handleUnsubscribe = async (id) => {
-    setLoadingUnsubscribing(id);
+  const fetchSubscribedChannels = async () => {
+    setLoading(true);
     try {
-      const response = await subscriptionApi.toggleSubscribeButton(user._id, id);
+      const response = await subscriptionApi.getChannelsSubscriber(user?._id);
+
       if (response.statusCode < 400) {
-        setSubscribedChannels((prev) => prev.filter((channel) => channel._id !== id));
+        setSubscriberChannels(response.message);
       }
     } catch (error) {
-      console.error('Failed to unsubscribe:', error);
+      setAlert({ type: 'error', message: 'Failed to fetch subscribed channels.' });
     } finally {
-      setLoadingUnsubscribing(null);
+      setLoading(false);
     }
   };
 
+  useEffect(() => {
+    if (!user?._id) return;
+    fetchSubscribedChannels();
+  }, [user?._id]);
+
+
   return (
     <div className="min-h-screen bg-background-light dark:bg-background-dark text-text-light dark:text-text-dark px-6 py-8">
-      <h1 className="text-3xl font-bold mb-6 text-center">Subscribed Channels</h1>
+      {alert && (
+        <div className="fixed top-15 right-5 z-50">
+          <Alert type={alert.type} message={alert.message} onClose={() => setAlert(null)} />
+        </div>
+      )}
+      <h1 className="text-3xl font-bold mb-6 text-center">Subscribers</h1>
 
       {loading ? (
         <div className="flex justify-center mt-10">
           <Spinner size={28} />
         </div>
-      ) : subscribedChannels.length === 0 ? (
+      ) : subscriberChannels.length === 0 ? (
         <p className="text-lg text-secondary-dark dark:text-secondary-light text-center">
           You're not subscribed to any channels.
         </p>
       ) : (
         <div className="grid grid-cols-1 sm:grid-cols-2 md:grid-cols-3 lg:grid-cols-4 gap-6">
-          {subscribedChannels.map((channel) => (
+          {subscriberChannels.map((channel) => (
             <div
-              key={channel._id}
+              key={channel.subscriber}
               className="border border-secondary-light dark:border-secondary-dark rounded-xl shadow-md p-6 flex flex-col items-center gap-4 transition-all transform hover:scale-105 bg-white dark:bg-gray-900"
             >
               {/* Channel Avatar */}
@@ -81,21 +71,11 @@ export default function Subscribed() {
               </div>
 
               {/* Channel Info */}
-              <div className="text-center">
-                <h2 className="text-xl font-semibold text-primary-light dark:text-primary-dark">
+              <div className="text-center" onClick={() => navigate(`/channel/${channel?.subscriber}`)}>
+                <h2 className="text-xl font-semibold text-primary-light dark:text-primary-dark cursor-pointer">
                   {channel?.subscriberDetails?.fullname}
                 </h2>
               </div>
-
-              {/* Unsubscribe Button */}
-              <button
-                onClick={() => handleUnsubscribe(channel._id)}
-                className="w-full px-4 py-2 flex items-center justify-center gap-2 text-white bg-red-500 hover:bg-red-600 rounded-lg transition-all disabled:opacity-50 disabled:cursor-not-allowed"
-                disabled={loadingUnsubscribing === channel._id}
-              >
-                <XCircle size={20} />
-                {loadingUnsubscribing === channel._id ? 'Unsubscribing...' : 'Unsubscribe'}
-              </button>
             </div>
           ))}
         </div>

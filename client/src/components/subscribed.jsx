@@ -3,48 +3,52 @@ import { XCircle, UserRound } from 'lucide-react';
 import { subscriptionApi } from '../api/subscription';
 import { useSelector } from 'react-redux';
 import { Spinner, Alert } from '../components';
+import { useNavigate } from 'react-router-dom';
 
 export default function Subscribed() {
   const [subscribedChannels, setSubscribedChannels] = useState([]);
   const [loading, setLoading] = useState(false);
   const [unsubscribeLoading, setUnsubscribeLoading] = useState(null); // Track individual unsubscribe
   const [alert, setAlert] = useState(null);
-
+  const navigate = useNavigate();
   const user = useSelector((state) => state.auth.user);
 
-  useEffect(() => {
-    const fetchSubscribedChannels = async () => {
-      setLoading(true);
-      try {
-        const response = await subscriptionApi.getSubscribedChannels(user?._id);
+  const fetchSubscribedChannels = async () => {
+    setLoading(true);
+    try {
+      const response = await subscriptionApi.getSubscribedChannels(user?._id);
 
-        if (response.statusCode < 400) {
-          setSubscribedChannels(response.message);
-        } else {
-          setAlert({
-            type: 'error',
-            message: response.message || 'Failed to fetch subscribed channels.',
-          });
-        }
-      } catch (error) {
-        setAlert({ type: 'error', message: 'Failed to fetch subscribed channels.' });
+
+      if (response.statusCode < 400) {
+        setSubscribedChannels(response.message);
+      } else {
+        setAlert({
+          type: 'error',
+          message: response.message || 'Failed to fetch subscribed channels.',
+        });
       }
-      setLoading(false);
-    };
+    } catch (error) {
+      setAlert({ type: 'error', message: 'Failed to fetch subscribed channels.' });
+    }
+    setLoading(false);
+  };
 
+  useEffect(() => {
+    if (!user?._id) return;
     fetchSubscribedChannels();
   }, [user?._id]);
 
   const handleUnsubscribe = async (id) => {
     setUnsubscribeLoading(id);
     try {
-      const response = await subscriptionApi.toggleSubscribeButton(user?._id, id);
+      const response = await subscriptionApi.toggleSubscribeButton(id);
+
       if (response.statusCode < 400) {
         setSubscribedChannels((prev) => prev.filter((channel) => channel._id !== id));
         setAlert({ type: 'success', message: 'Successfully unsubscribed!' });
+        fetchSubscribedChannels();
       }
     } catch (error) {
-      console.error(error);
       setAlert({ type: 'error', message: 'Failed to unsubscribe.' });
     }
     setUnsubscribeLoading(null);
@@ -89,17 +93,17 @@ export default function Subscribed() {
               </div>
 
               {/* Channel Info */}
-              <div className="text-center">
-                <h2 className="text-xl font-semibold text-primary-light dark:text-primary-dark">
+              <div className="text-center" onClick={() => navigate(`/channel/${channel?.channel}`)}>
+                <h2 className="text-xl font-semibold text-primary-light dark:text-primary-dark cursor-pointer">
                   {channel.fullname}
                 </h2>
               </div>
 
               {/* Unsubscribe Button */}
               <button
-                onClick={() => handleUnsubscribe(channel._id)}
+                onClick={() => handleUnsubscribe(channel?.channel)}
                 className="w-full px-4 py-2 flex items-center justify-center gap-2 text-white bg-red-500 hover:bg-red-600 rounded-lg transition-all disabled:opacity-50 disabled:cursor-not-allowed"
-                disabled={unsubscribeLoading === channel._id}
+                disabled={unsubscribeLoading === channel?.channel}
               >
                 {unsubscribeLoading === channel._id ? <Spinner size={18} /> : <XCircle size={20} />}
                 {unsubscribeLoading === channel._id ? 'Unsubscribing...' : 'Unsubscribe'}

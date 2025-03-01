@@ -31,15 +31,13 @@ apiClient.interceptors.response.use(
   async (error) => {
     const originalRequest = error.config;
 
-    if (error.response?.status >= 400 && !originalRequest._retry) {
+    if (error.response?.status === 401 && !originalRequest._retry) {
       originalRequest._retry = true;
       try {
         const refreshToken =
           localStorage.getItem('refreshToken') || store.getState().auth?.refreshToken;
-        console.log(refreshToken);
 
         if (!refreshToken) {
-          console.error('[REFRESH TOKEN MISSING] Redirecting to login.');
           store.dispatch(logout());
           window.location.href = '/login'; // Redirect to login page
           return Promise.reject(error);

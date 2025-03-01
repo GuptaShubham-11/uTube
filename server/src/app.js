@@ -40,7 +40,6 @@ routes.forEach(({ path, router }) => app.use(path, router));
 
 // Global error handler
 app.use((err, req, res, next) => {
-  console.error("Error:", err.message);
   res.status(err.statusCode || 500).json({
     message: err.message || "Internal Server Error",
     status: err.statusCode || 500,

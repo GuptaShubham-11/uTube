@@ -68,9 +68,19 @@ const SinglePlaylist = ({ playlist, channelId, onClose }) => {
       }
     } catch (error) {
       setAlert({ message: 'Error removing video.', type: 'error' });
-      console.error('Error deleting video:', error);
     }
   };
+
+  if (videos.length === 0) {
+    return (
+      <div className="flex justify-center items-center">
+        <button onClick={onClose} className="text-red-600 hover:text-red-800">
+          <XCircle size={28} />
+        </button>
+        <p className="text-gray-500 text-lg">No videos found in this playlist.</p>
+      </div>
+    );
+  }
 
   return (
     <div className="p-6 relative">
