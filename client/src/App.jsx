@@ -47,7 +47,6 @@ function App() {
     wakeServer();
   }, []);
 
-
   const routes = [
     { path: '/', element: isAuthenticated ? <Videos /> : <Home /> },
     { path: '/signup', element: isAuthenticated ? <Navigate to="/" /> : <Signup /> },

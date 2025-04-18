@@ -156,5 +156,5 @@ export const userApi = {
   getWatchHistory,
   updateWatchHistory,
   getCurrentUser,
-  wakeUpServer
+  wakeUpServer,
 };
