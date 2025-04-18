@@ -35,17 +35,15 @@ function App() {
     }
   }, [theme, dispatch]);
 
-  useEffect(() => {
-    const wakeServer = async () => {
-      try {
-        await userApi.wakeUpServer();
-      } catch (error) {
-        console.error('Failed to wake up server:', error);
-      }
-    };
+  const wakeServer = async () => {
+    try {
+      await userApi.wakeUpServer();
+    } catch (error) {
+      console.error('Failed to wake up server:', error);
+    }
+  };
 
-    wakeServer();
-  }, []);
+  wakeServer();
 
   const routes = [
     { path: '/', element: isAuthenticated ? <Videos /> : <Home /> },
