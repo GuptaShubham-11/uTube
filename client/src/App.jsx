@@ -15,6 +15,7 @@ import {
   Login,
   Search,
 } from './pages';
+import { userApi } from './api/user.js';
 
 function App() {
   const theme = useSelector((state) => state.theme.theme);
@@ -33,6 +34,19 @@ function App() {
       dispatch(login({ accessToken, user, refreshToken: null }));
     }
   }, [theme, dispatch]);
+
+  useEffect(() => {
+    const wakeServer = async () => {
+      try {
+        await userApi.wakeUpServer();
+      } catch (error) {
+        console.error('Failed to wake up server:', error);
+      }
+    };
+
+    wakeServer();
+  }, []);
+
 
   const routes = [
     { path: '/', element: isAuthenticated ? <Videos /> : <Home /> },

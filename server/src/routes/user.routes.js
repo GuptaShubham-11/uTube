@@ -12,6 +12,7 @@ import {
   getUserChannelProfile,
   getWatchHistory,
   updateWatchHistory,
+  wakeupServer,
 } from "../controllers/user.controller.js";
 import { upload } from "../middlewares/multer.middleware.js";
 import { verifyJWT } from "../middlewares/auth.middleware.js";
@@ -33,6 +34,7 @@ router.route("/register").post(
 );
 
 router.route("/login").post(loginUser);
+router.route("/wakeup").get(wakeupServer);
 
 // Secured routes
 router.use(verifyJWT);

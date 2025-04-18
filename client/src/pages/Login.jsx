@@ -1,5 +1,5 @@
 import { useState } from 'react';
-import { Eye, EyeOff, Mail, Lock } from 'lucide-react';
+import { Eye, EyeOff, Mail, Lock, User } from 'lucide-react';
 import { Link, useNavigate } from 'react-router-dom';
 import { Alert, Spinner, Button, Input } from '../components';
 import { userApi } from '../api/user.js';
@@ -59,6 +59,14 @@ export default function Login() {
     setLoading(false);
   };
 
+  const fillTestCredentials = () => {
+    setFormData({
+      email: 'testuser@example.com',
+      password: 'test1234',
+    });
+    setAlert({ type: 'info', message: 'Test credentials filled!' });
+  };
+
   return (
     <div className="flex justify-center items-center min-h-screen px-4">
       {alert && (
@@ -99,6 +107,16 @@ export default function Login() {
             onClick={handleSubmit}
             isLoading={loading}
             variant="primary"
+            className="w-full py-2"
+          />
+          <Button
+            text={
+              <div className="flex items-center gap-2">
+                <User size={18} /> Use Test Credentials
+              </div>
+            }
+            onClick={fillTestCredentials}
+            variant="outline"
             className="w-full py-2"
           />
           <p className="text-center text-gray-600 dark:text-gray-300 font-medium">
