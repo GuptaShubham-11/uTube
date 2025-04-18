@@ -34,7 +34,6 @@ function App() {
     }
   }, [theme, dispatch]);
 
-
   const routes = [
     { path: '/', element: isAuthenticated ? <Videos /> : <Home /> },
     { path: '/signup', element: isAuthenticated ? <Navigate to="/" /> : <Signup /> },

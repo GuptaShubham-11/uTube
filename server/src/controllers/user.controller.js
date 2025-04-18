@@ -413,7 +413,6 @@ const updateWatchHistory = async (req, res) => {
   }
 };
 
-
 export {
   registerUser,
   loginUser,
