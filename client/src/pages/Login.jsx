@@ -61,8 +61,8 @@ export default function Login() {
 
   const fillTestCredentials = () => {
     setFormData({
-      email: 'testuser@example.com',
-      password: 'test1234',
+      email: 'shubham@gupta.com',
+      password: '123456',
     });
     setAlert({ type: 'info', message: 'Test credentials filled!' });
   };
