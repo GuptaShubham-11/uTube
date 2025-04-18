@@ -413,9 +413,6 @@ const updateWatchHistory = async (req, res) => {
   }
 };
 
-const wakeupServer = async (_, res) => {
-  res.status(200).json(new ApiResponse(200, {}, "Server is awake."));
-};
 
 export {
   registerUser,
@@ -430,5 +427,4 @@ export {
   getUserChannelProfile,
   getWatchHistory,
   updateWatchHistory,
-  wakeupServer,
 };

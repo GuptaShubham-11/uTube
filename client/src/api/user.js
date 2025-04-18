@@ -1,14 +1,5 @@
 import apiClient from './apiClient.js';
 
-const wakeUpServer = async () => {
-  try {
-    const response = await apiClient.get('/users/wakeup');
-    return response.data;
-  } catch (error) {
-    return error.response?.data || { message: 'An error occurred' };
-  }
-};
-
 const signUp = async (data) => {
   try {
     const response = await apiClient.post('/users/register', data, {
